@@ -27,17 +27,18 @@
         .container {
             max-width: 500px;
             margin: 0 auto;
+            padding-bottom: 80px;
         }
 
         header {
             text-align: center;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         h1 {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 700;
-            margin: 0 0 8px 0;
+            margin: 0 0 4px 0;
         }
 
         .btn-spotify {
@@ -67,22 +68,43 @@
             border: 1px solid rgba(255,255,255,0.05);
         }
 
-        .exercise-title {
-            font-size: 18px;
-            font-weight: 600;
+        .exercise-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 12px;
+        }
+
+        .exercise-title {
+            font-size: 17px;
+            font-weight: 600;
             color: var(--text-color);
+        }
+
+        .set-badge {
+            background: rgba(10, 132, 255, 0.15);
+            color: var(--accent-color);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
         }
 
         .set-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             gap: 10px;
             background: rgba(255,255,255,0.03);
-            padding: 8px 12px;
+            padding: 10px 12px;
             border-radius: 10px;
+        }
+
+        .set-info {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
         }
 
         input[type="number"] {
@@ -101,10 +123,16 @@
             background: var(--accent-color);
             color: #fff;
             border: none;
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: 8px;
             font-weight: 600;
+            font-size: 14px;
             cursor: pointer;
+        }
+
+        .btn-check.completed {
+            background: var(--success-color);
+            color: #000;
         }
 
         .timer-overlay {
@@ -121,6 +149,7 @@
             gap: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             border: 1px solid rgba(255,255,255,0.1);
+            z-index: 999;
         }
 
         .timer-text {
@@ -134,8 +163,8 @@
 
 <div class="container">
     <header>
-        <h1>Gym Routine</h1>
-        <p style="color: var(--text-secondary); margin:0;">Diseño Apple Fitness</p>
+        <h1>Rutina Completa</h1>
+        <p style="color: var(--text-secondary); margin:0;">12 Ejercicios • Modo Apple Fitness</p>
     </header>
 
     <button class="btn-spotify" onclick="startSpotify()">
@@ -152,22 +181,28 @@
 
 <script>
     const exercises = [
-        { id: 1, name: "Press de Banca", weights: true },
-        { id: 2, name: "Sentadillas con Barra", weights: true },
-        { id: 3, name: "Peso Muerto", weights: true },
-        { id: 4, name: "Press Militar", weights: true },
-        { id: 5, name: "Dominadas", weights: false },
-        { id: 6, name: "Curl de Bíceps", weights: true }
+        { id: 1, name: "Press de Banca Plano", totalSets: 4, weights: true },
+        { id: 2, name: "Press Inclinado con Mancuernas", totalSets: 4, weights: true },
+        { id: 3, name: "Aperturas con Polea / Mancuernas", totalSets: 3, weights: true },
+        { id: 4, name: "Press Militar de Hombros", totalSets: 4, weights: true },
+        { id: 5, name: "Elevaciones Laterales", totalSets: 4, weights: true },
+        { id: 6, name: "Sentadillas", totalSets: 4, weights: true },
+        { id: 7, name: "Prensa de Piernas", totalSets: 4, weights: true },
+        { id: 8, name: "Peso Muerto Rumano", totalSets: 4, weights: true },
+        { id: 9, name: "Dominadas / Jalón al Pecho", totalSets: 4, weights: true },
+        { id: 10, name: "Remo con Barra o Polea", totalSets: 4, weights: true },
+        { id: 11, name: "Curl de Bíceps con Barra", totalSets: 3, weights: true },
+        { id: 12, name: "Extensión de Tríceps en Polea", totalSets: 3, weights: true }
     ];
 
     function startSpotify() {
         window.location.href = "spotify://";
-        speakText("Entrenamiento iniciado. ¡Vamos a darle con todo!");
+        speakText("Entrenamiento iniciado. ¡Vamos a darle!");
     }
 
     function speakText(text) {
         if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel(); // Detener audios anteriores
+            window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'es-ES';
             utterance.rate = 1.0;
@@ -179,16 +214,23 @@
         const container = document.getElementById('exercises-list');
         container.innerHTML = '';
 
-        exercises.forEach((ex, idx) => {
+        exercises.forEach((ex, exIdx) => {
+            const currentSet = parseInt(localStorage.getItem(`set_current_${ex.id}`) || '1');
             const savedWeight = localStorage.getItem(`weight_${ex.id}`) || '';
+
             const card = document.createElement('div');
             card.className = 'exercise-card';
             card.innerHTML = `
-                <div class="exercise-title">${ex.name}</div>
+                <div class="exercise-header">
+                    <span class="exercise-title">${exIdx + 1}. ${ex.name}</span>
+                    <span class="set-badge">Serie ${Math.min(currentSet, ex.totalSets)} de ${ex.totalSets}</span>
+                </div>
                 <div class="set-row">
-                    <span style="font-size: 14px; color: var(--text-secondary);">Peso usado:</span>
-                    ${ex.weights ? `<input type="number" id="input_${ex.id}" value="${savedWeight}" placeholder="kg" onchange="saveWeight(${ex.id}, this.value)">` : '<span style="font-size:14px;">Corporal</span>'}
-                    <button class="btn-check" onclick="completeSet(${idx})">Completar</button>
+                    <span class="set-info">Serie N° ${Math.min(currentSet, ex.totalSets)}</span>
+                    ${ex.weights ? `<input type="number" inputmode="decimal" pattern="[0-9]*" id="input_${ex.id}" value="${savedWeight}" placeholder="kg" onchange="saveWeight(${ex.id}, this.value)">` : '<span style="font-size:14px;">Corporal</span>'}
+                    <button class="btn-check ${currentSet > ex.totalSets ? 'completed' : ''}" onclick="completeSet(${exIdx})">
+                        ${currentSet > ex.totalSets ? '✓ Completo' : 'Completar'}
+                    </button>
                 </div>
             `;
             container.appendChild(card);
@@ -199,7 +241,17 @@
         localStorage.setItem(`weight_${id}`, val);
     }
 
-    function completeSet(currentIndex) {
+    function completeSet(exIdx) {
+        const ex = exercises[exIdx];
+        let currentSet = parseInt(localStorage.getItem(`set_current_${ex.id}`) || '1');
+
+        if (currentSet <= ex.totalSets) {
+            currentSet++;
+            localStorage.setItem(`set_current_${ex.id}`, currentSet);
+        }
+
+        renderExercises();
+
         if (navigator.vibrate) {
             navigator.vibrate([200, 100, 200]);
         }
@@ -209,7 +261,14 @@
         const countEl = document.getElementById('timer-count');
         timerEl.style.display = 'flex';
 
-        const nextExercise = exercises[currentIndex + 1] ? exercises[currentIndex + 1].name : "Has finalizado la rutina";
+        let nextMsg = "";
+        if (currentSet <= ex.totalSets) {
+            nextMsg = `Siguiente: Serie ${currentSet} de ${ex.name}`;
+        } else if (exercises[exIdx + 1]) {
+            nextMsg = `Siguiente ejercicio: ${exercises[exIdx + 1].name}`;
+        } else {
+            nextMsg = "¡Felicitaciones, completaste toda la rutina!";
+        }
 
         const interval = setInterval(() => {
             timeLeft--;
@@ -223,7 +282,7 @@
                     navigator.vibrate([500, 200, 500]);
                 }
 
-                speakText(`Descanso terminado. El siguiente ejercicio es ${nextExercise}`);
+                speakText(`Descanso terminado. ${nextMsg}`);
             }
         }, 1000);
     }

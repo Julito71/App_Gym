@@ -2,63 +2,233 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GymPro Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Gym Routine - Apple Style</title>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .checked { background-color: #059669 !important; border-color: #059669 !important; }
+        :root {
+            --bg-color: #000000;
+            --card-bg: #1c1c1e;
+            --accent-color: #0a84ff;
+            --text-color: #ffffff;
+            --text-secondary: #8e8e93;
+            --success-color: #30d158;
+            --warning-color: #ffd60a;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+        }
+
+        .btn-spotify {
+            background-color: #1db954;
+            color: #000;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
+        }
+
+        .exercise-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .exercise-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-color);
+        }
+
+        .set-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            gap: 10px;
+            background: rgba(255,255,255,0.03);
+            padding: 8px 12px;
+            border-radius: 10px;
+        }
+
+        input[type="number"] {
+            background: #2c2c2e;
+            border: 1px solid #3a3a3c;
+            border-radius: 8px;
+            color: #fff;
+            padding: 8px;
+            width: 75px;
+            text-align: center;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .btn-check {
+            background: var(--accent-color);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .timer-overlay {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(44, 44, 46, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 14px 28px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .timer-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--warning-color);
+        }
     </style>
 </head>
-<body class="bg-gray-950 text-gray-100 min-h-screen">
-    <div class="max-w-xl mx-auto p-4 pb-24">
-        <header class="flex justify-between items-center mb-8 pt-4">
-            <div>
-                <h1 class="text-2xl font-bold text-white tracking-tight">GymPro <span class="text-emerald-500">Log</span></h1>
-                <p class="text-gray-400 text-sm">Rutina de Entrenamiento Personal</p>
-            </div>
-            <button onclick="resetAll()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-400 px-3 py-2 rounded-lg transition">
-                Reiniciar
-            </button>
-        </header>
+<body>
 
-        <!-- Main Timer / Cardio Section -->
-        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 mb-8 shadow-xl">
-            <div class="flex justify-between items-center mb-4">
-                <h2 id="timer-title" class="text-sm font-semibold uppercase tracking-wider text-gray-400">Calentamiento</h2>
-                <span id="timer-display" class="text-3xl font-mono font-bold text-emerald-500">05:00</span>
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-                <button id="timer-btn" onclick="toggleTimer()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-emerald-900/20">
-                    Iniciar
-                </button>
-                <button onclick="resetTimer()" class="bg-gray-800 hover:bg-gray-700 text-white font-bold py-3 rounded-xl transition">
-                    Reiniciar
-                </button>
-            </div>
-            <div class="mt-4 flex gap-2 overflow-x-auto pb-2">
-                <button onclick="setTimer(300, 'Calentamiento')" class="whitespace-nowrap text-xs bg-gray-800 px-3 py-1.5 rounded-full hover:bg-gray-700">5m Cardio</button>
-                <button onclick="setTimer(60, 'Descanso')" class="whitespace-nowrap text-xs bg-gray-800 px-3 py-1.5 rounded-full hover:bg-gray-700">1m Descanso</button>
-                <button onclick="setTimer(90, 'Descanso')" class="whitespace-nowrap text-xs bg-gray-800 px-3 py-1.5 rounded-full hover:bg-gray-700">1:30m Descanso</button>
-            </div>
-        </div>
+<div class="container">
+    <header>
+        <h1>Gym Routine</h1>
+        <p style="color: var(--text-secondary); margin:0;">Diseño Apple Fitness</p>
+    </header>
 
-        <!-- Exercises List -->
-        <div id="exercises-list" class="space-y-4">
-            <!-- Exercices will be injected here -->
-        </div>
+    <button class="btn-spotify" onclick="startSpotify()">
+        🎵 Abrir Spotify y Entrenar
+    </button>
 
-        <!-- Footer Info -->
-        <footer class="mt-12 text-center text-gray-600 text-xs">
-            <p>Datos guardados localmente en este navegador.</p>
-        </footer>
-    </div>
+    <div id="exercises-list"></div>
+</div>
 
-    <!-- Notification Sound (Optional/Hidden) -->
-    <audio id="beep" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
+<div class="timer-overlay" id="timer">
+    <span>⏱️ Descanso:</span>
+    <span class="timer-text" id="timer-count">60s</span>
+</div>
 
-    <script src="app.js"></script>
+<script>
+    const exercises = [
+        { id: 1, name: "Press de Banca", weights: true },
+        { id: 2, name: "Sentadillas con Barra", weights: true },
+        { id: 3, name: "Peso Muerto", weights: true },
+        { id: 4, name: "Press Militar", weights: true },
+        { id: 5, name: "Dominadas", weights: false },
+        { id: 6, name: "Curl de Bíceps", weights: true }
+    ];
+
+    function startSpotify() {
+        window.location.href = "spotify://";
+        speakText("Entrenamiento iniciado. ¡Vamos a darle con todo!");
+    }
+
+    function speakText(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel(); // Detener audios anteriores
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'es-ES';
+            utterance.rate = 1.0;
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    function renderExercises() {
+        const container = document.getElementById('exercises-list');
+        container.innerHTML = '';
+
+        exercises.forEach((ex, idx) => {
+            const savedWeight = localStorage.getItem(`weight_${ex.id}`) || '';
+            const card = document.createElement('div');
+            card.className = 'exercise-card';
+            card.innerHTML = `
+                <div class="exercise-title">${ex.name}</div>
+                <div class="set-row">
+                    <span style="font-size: 14px; color: var(--text-secondary);">Peso usado:</span>
+                    ${ex.weights ? `<input type="number" id="input_${ex.id}" value="${savedWeight}" placeholder="kg" onchange="saveWeight(${ex.id}, this.value)">` : '<span style="font-size:14px;">Corporal</span>'}
+                    <button class="btn-check" onclick="completeSet(${idx})">Completar</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function saveWeight(id, val) {
+        localStorage.setItem(`weight_${id}`, val);
+    }
+
+    function completeSet(currentIndex) {
+        if (navigator.vibrate) {
+            navigator.vibrate([200, 100, 200]);
+        }
+
+        let timeLeft = 60;
+        const timerEl = document.getElementById('timer');
+        const countEl = document.getElementById('timer-count');
+        timerEl.style.display = 'flex';
+
+        const nextExercise = exercises[currentIndex + 1] ? exercises[currentIndex + 1].name : "Has finalizado la rutina";
+
+        const interval = setInterval(() => {
+            timeLeft--;
+            countEl.textContent = `${timeLeft}s`;
+
+            if (timeLeft <= 0) {
+                clearInterval(interval);
+                timerEl.style.display = 'none';
+
+                if (navigator.vibrate) {
+                    navigator.vibrate([500, 200, 500]);
+                }
+
+                speakText(`Descanso terminado. El siguiente ejercicio es ${nextExercise}`);
+            }
+        }, 1000);
+    }
+
+    renderExercises();
+</script>
 </body>
 </html>

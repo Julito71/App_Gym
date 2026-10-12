@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Gym Routine - Apple Style</title>
+    <title>Mi Rutina - Apple Style</title>
     <style>
         :root {
             --bg-color: #000000;
@@ -76,7 +76,7 @@
         }
 
         .exercise-title {
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 600;
             color: var(--text-color);
         }
@@ -86,7 +86,7 @@
             color: var(--accent-color);
             padding: 4px 10px;
             border-radius: 12px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
         }
 
@@ -163,8 +163,8 @@
 
 <div class="container">
     <header>
-        <h1>Rutina Completa</h1>
-        <p style="color: var(--text-secondary); margin:0;">12 Ejercicios • Modo Apple Fitness</p>
+        <h1>Mi Rutina Personal</h1>
+        <p style="color: var(--text-secondary); margin:0;">Modo Apple Fitness</p>
     </header>
 
     <button class="btn-spotify" onclick="startSpotify()">
@@ -181,23 +181,23 @@
 
 <script>
     const exercises = [
-        { id: 1, name: "Press de Banca Plano", totalSets: 4, weights: true },
-        { id: 2, name: "Press Inclinado con Mancuernas", totalSets: 4, weights: true },
-        { id: 3, name: "Aperturas con Polea / Mancuernas", totalSets: 3, weights: true },
-        { id: 4, name: "Press Militar de Hombros", totalSets: 4, weights: true },
-        { id: 5, name: "Elevaciones Laterales", totalSets: 4, weights: true },
-        { id: 6, name: "Sentadillas", totalSets: 4, weights: true },
-        { id: 7, name: "Prensa de Piernas", totalSets: 4, weights: true },
-        { id: 8, name: "Peso Muerto Rumano", totalSets: 4, weights: true },
-        { id: 9, name: "Dominadas / Jalón al Pecho", totalSets: 4, weights: true },
-        { id: 10, name: "Remo con Barra o Polea", totalSets: 4, weights: true },
-        { id: 11, name: "Curl de Bíceps con Barra", totalSets: 3, weights: true },
-        { id: 12, name: "Extensión de Tríceps en Polea", totalSets: 3, weights: true }
+        { id: 1, name: "5 min Calentamiento Bici", totalSets: 1, weights: false, reps: "5 min" },
+        { id: 2, name: "Pecho Banco Inclinado", totalSets: 3, weights: true, reps: "15 reps" },
+        { id: 3, name: "Bíceps", totalSets: 3, weights: true, reps: "15 reps" },
+        { id: 4, name: "Abdominales Laterales de Pie", totalSets: 3, weights: true, reps: "15 reps" },
+        { id: 5, name: "Hombros Adelante", totalSets: 3, weights: true, reps: "15 reps" },
+        { id: 6, name: "Pecho Acostado", totalSets: 3, weights: true, reps: "15 reps" },
+        { id: 7, name: "Piernas (rodillo empeine)", totalSets: 3, weights: true, reps: "15 reps" },
+        { id: 8, name: "Abdominales", totalSets: 4, weights: false, reps: "25 reps" },
+        { id: 9, name: "Remo", totalSets: 3, weights: true, reps: "15 reps" },
+        { id: 10, name: "Press Piernas", totalSets: 3, weights: true, reps: "15 reps" },
+        { id: 11, name: "Tríceps Acostado", totalSets: 3, weights: true, reps: "15 reps" },
+        { id: 12, name: "Dorsales Pecho", totalSets: 3, weights: true, reps: "15 reps" }
     ];
 
     function startSpotify() {
         window.location.href = "spotify://";
-        speakText("Entrenamiento iniciado. ¡Vamos a darle!");
+        speakText("Entrenamiento iniciado. ¡Vamos a darle con todo!");
     }
 
     function speakText(text) {
@@ -222,12 +222,12 @@
             card.className = 'exercise-card';
             card.innerHTML = `
                 <div class="exercise-header">
-                    <span class="exercise-title">${exIdx + 1}. ${ex.name}</span>
-                    <span class="set-badge">Serie ${Math.min(currentSet, ex.totalSets)} de ${ex.totalSets}</span>
+                    <span class="exercise-title">${exIdx + 1}. ${ex.name} (${ex.reps})</span>
+                    <span class="set-badge">Serie ${Math.min(currentSet, ex.totalSets)} / ${ex.totalSets}</span>
                 </div>
                 <div class="set-row">
-                    <span class="set-info">Serie N° ${Math.min(currentSet, ex.totalSets)}</span>
-                    ${ex.weights ? `<input type="number" inputmode="decimal" pattern="[0-9]*" id="input_${ex.id}" value="${savedWeight}" placeholder="kg" onchange="saveWeight(${ex.id}, this.value)">` : '<span style="font-size:14px;">Corporal</span>'}
+                    <span class="set-info">Serie ${Math.min(currentSet, ex.totalSets)}</span>
+                    ${ex.weights ? `<input type="number" inputmode="decimal" pattern="[0-9]*" id="input_${ex.id}" value="${savedWeight}" placeholder="kg" onchange="saveWeight(${ex.id}, this.value)">` : '<span style="font-size:13px; color:var(--text-secondary);">Sin peso</span>'}
                     <button class="btn-check ${currentSet > ex.totalSets ? 'completed' : ''}" onclick="completeSet(${exIdx})">
                         ${currentSet > ex.totalSets ? '✓ Completo' : 'Completar'}
                     </button>

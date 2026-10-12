@@ -13,6 +13,7 @@
             --text-secondary: #8e8e93;
             --success-color: #30d158;
             --warning-color: #ffd60a;
+            --danger-color: #ff453a;
         }
 
         body {
@@ -27,7 +28,7 @@
         .container {
             max-width: 500px;
             margin: 0 auto;
-            padding-bottom: 80px;
+            padding-bottom: 100px;
         }
 
         header {
@@ -41,22 +42,38 @@
             margin: 0 0 4px 0;
         }
 
+        .action-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
         .btn-spotify {
             background-color: #1db954;
             color: #000;
             border: none;
-            padding: 12px 20px;
-            border-radius: 20px;
+            padding: 12px 16px;
+            border-radius: 16px;
             font-weight: 600;
-            font-size: 15px;
+            font-size: 14px;
             cursor: pointer;
-            width: 100%;
-            margin-bottom: 20px;
+            flex: 2;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
+            gap: 6px;
+        }
+
+        .btn-reset {
+            background-color: #2c2c2e;
+            color: var(--danger-color);
+            border: 1px solid rgba(255, 69, 58, 0.3);
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            flex: 1;
         }
 
         .exercise-card {
@@ -76,9 +93,27 @@
         }
 
         .exercise-title {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .reorder-btns {
+            display: flex;
+            gap: 4px;
+        }
+
+        .btn-reorder {
+            background: #2c2c2e;
+            border: none;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
         }
 
         .set-badge {
@@ -113,7 +148,7 @@
             border-radius: 8px;
             color: #fff;
             padding: 8px;
-            width: 75px;
+            width: 70px;
             text-align: center;
             font-size: 16px;
             outline: none;
@@ -157,6 +192,27 @@
             font-weight: 700;
             color: var(--warning-color);
         }
+
+        .history-section {
+            margin-top: 30px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+        }
+
+        .history-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+
+        .history-item {
+            font-size: 13px;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 6px 0;
+        }
     </style>
 </head>
 <body>
@@ -167,11 +223,17 @@
         <p style="color: var(--text-secondary); margin:0;">Modo Apple Fitness</p>
     </header>
 
-    <button class="btn-spotify" onclick="startSpotify()">
-        🎵 Abrir Spotify y Entrenar
-    </button>
+    <div class="action-bar">
+        <button class="btn-spotify" onclick="startSpotify()">🎵 Abrir Spotify</button>
+        <button class="btn-reset" onclick="resetRoutine()">🔄 Resetear</button>
+    </div>
 
     <div id="exercises-list"></div>
+
+    <div class="history-section">
+        <div class="history-title">📜 Historial de Sesiones</div>
+        <div id="history-list"></div>
+    </div>
 </div>
 
 <div class="timer-overlay" id="timer">
@@ -180,7 +242,7 @@
 </div>
 
 <script>
-    const exercises = [
+    const defaultExercises = [
         { id: 1, name: "5 min Calentamiento Bici", totalSets: 1, weights: false, reps: "5 min" },
         { id: 2, name: "Pecho Banco Inclinado", totalSets: 3, weights: true, reps: "15 reps" },
         { id: 3, name: "Bíceps", totalSets: 3, weights: true, reps: "15 reps" },
@@ -195,9 +257,11 @@
         { id: 12, name: "Dorsales Pecho", totalSets: 3, weights: true, reps: "15 reps" }
     ];
 
+    let exercises = JSON.parse(localStorage.getItem('routine_order')) || defaultExercises;
+
     function startSpotify() {
         window.location.href = "spotify://";
-        speakText("Entrenamiento iniciado. ¡Vamos a darle con todo!");
+        speakText("Entrenamiento iniciado. ¡A entrenar!");
     }
 
     function speakText(text) {
@@ -208,6 +272,22 @@
             utterance.rate = 1.0;
             window.speechSynthesis.speak(utterance);
         }
+    }
+
+    function saveOrder() {
+        localStorage.setItem('routine_order', JSON.stringify(exercises));
+    }
+
+    function moveExercise(idx, direction) {
+        const newIdx = idx + direction;
+        if (newIdx < 0 || newIdx >= exercises.length) return;
+
+        const temp = exercises[idx];
+        exercises[idx] = exercises[newIdx];
+        exercises[newIdx] = temp;
+
+        saveOrder();
+        renderExercises();
     }
 
     function renderExercises() {
@@ -222,11 +302,17 @@
             card.className = 'exercise-card';
             card.innerHTML = `
                 <div class="exercise-header">
-                    <span class="exercise-title">${exIdx + 1}. ${ex.name} (${ex.reps})</span>
+                    <div class="exercise-title">
+                        <div class="reorder-btns">
+                            <button class="btn-reorder" onclick="moveExercise(${exIdx}, -1)">▲</button>
+                            <button class="btn-reorder" onclick="moveExercise(${exIdx}, 1)">▼</button>
+                        </div>
+                        <span>${exIdx + 1}. ${ex.name}</span>
+                    </div>
                     <span class="set-badge">Serie ${Math.min(currentSet, ex.totalSets)} / ${ex.totalSets}</span>
                 </div>
                 <div class="set-row">
-                    <span class="set-info">Serie ${Math.min(currentSet, ex.totalSets)}</span>
+                    <span class="set-info">(${ex.reps})</span>
                     ${ex.weights ? `<input type="number" inputmode="decimal" pattern="[0-9]*" id="input_${ex.id}" value="${savedWeight}" placeholder="kg" onchange="saveWeight(${ex.id}, this.value)">` : '<span style="font-size:13px; color:var(--text-secondary);">Sin peso</span>'}
                     <button class="btn-check ${currentSet > ex.totalSets ? 'completed' : ''}" onclick="completeSet(${exIdx})">
                         ${currentSet > ex.totalSets ? '✓ Completo' : 'Completar'}
@@ -235,17 +321,52 @@
             `;
             container.appendChild(card);
         });
+
+        renderHistory();
     }
 
     function saveWeight(id, val) {
         localStorage.setItem(`weight_${id}`, val);
     }
 
+    function logHistory(exerciseName, setNum, weight) {
+        const history = JSON.parse(localStorage.getItem('routine_history') || '[]');
+        const now = new Date();
+        const timeStr = `${now.toLocaleDateString()} ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+        
+        history.unshift({ time: timeStr, text: `${exerciseName} - Serie ${setNum} (${weight ? weight + ' kg' : 'Sin peso'})` });
+        if (history.length > 20) history.pop(); // Mantener ultimos 20 registros
+
+        localStorage.setItem('routine_history', JSON.stringify(history));
+        renderHistory();
+    }
+
+    function renderHistory() {
+        const historyEl = document.getElementById('history-list');
+        const history = JSON.parse(localStorage.getItem('routine_history') || '[]');
+        if (history.length === 0) {
+            historyEl.innerHTML = '<div class="history-item">No hay registros aún.</div>';
+            return;
+        }
+        historyEl.innerHTML = history.map(item => `<div class="history-item"><strong>${item.time}:</strong> ${item.text}</div>`).join('');
+    }
+
+    function resetRoutine() {
+        if (confirm("¿Quieres reiniciar el progreso de la rutina de hoy?")) {
+            exercises.forEach(ex => {
+                localStorage.removeItem(`set_current_${ex.id}`);
+            });
+            renderExercises();
+        }
+    }
+
     function completeSet(exIdx) {
         const ex = exercises[exIdx];
         let currentSet = parseInt(localStorage.getItem(`set_current_${ex.id}`) || '1');
+        const weight = localStorage.getItem(`weight_${ex.id}`) || '';
 
         if (currentSet <= ex.totalSets) {
+            logHistory(ex.name, currentSet, weight);
             currentSet++;
             localStorage.setItem(`set_current_${ex.id}`, currentSet);
         }

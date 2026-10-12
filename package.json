@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@gitlawb/openclaude": "^0.32.0",
+    "@twigpine/openclaude": "^0.32.0"
+  }
+}

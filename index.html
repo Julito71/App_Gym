@@ -18,7 +18,7 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
@@ -29,7 +29,7 @@
         .container {
             max-width: 500px;
             margin: 0 auto;
-            padding-bottom: 100px;
+            padding-bottom: 110px;
         }
 
         header {
@@ -41,6 +41,7 @@
             font-size: 26px;
             font-weight: 700;
             margin: 0 0 4px 0;
+            letter-spacing: -0.5px;
         }
 
         .action-bar {
@@ -64,6 +65,11 @@
             justify-content: center;
             gap: 6px;
             text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        .btn-spotify:active {
+            opacity: 0.8;
         }
 
         .btn-reset {
@@ -76,6 +82,11 @@
             font-size: 14px;
             cursor: pointer;
             flex: 1;
+            transition: opacity 0.2s;
+        }
+
+        .btn-reset:active {
+            opacity: 0.8;
         }
 
         .exercise-card {
@@ -144,6 +155,10 @@
             outline: none;
         }
 
+        input[type="number"]:focus {
+            border-color: var(--accent-color);
+        }
+
         .btn-action {
             background: var(--accent-color);
             color: #fff;
@@ -153,6 +168,11 @@
             font-weight: 600;
             font-size: 14px;
             cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-action:active {
+            opacity: 0.8;
         }
 
         .btn-action.completed {
@@ -174,6 +194,7 @@
             transform: translateX(-50%);
             background: rgba(44, 44, 46, 0.95);
             backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-radius: 30px;
             padding: 14px 28px;
             display: none;
@@ -260,11 +281,29 @@
         { id: 12, name: "Dorsales Pecho", totalSets: 3, weights: true, reps: "15 reps" }
     ];
 
-    let activeExerciseId = localStorage.getItem('active_exercise_id') ? parseInt(localStorage.getItem('active_exercise_id')) : null;
+    let activeExerciseId = localStorage.getItem('active_exercise_id') ? parseInt(localStorage.getItem('active_exercise_id'), 10) : null;
     let timerEndTime = null;
     let timerInterval = null;
 
-    // Usar marcas de tiempo reales (Timestamp) para evitar que el temporizador se pause al bloquear la pantalla o cambiar de app
+    function playBeep() {
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return;
+            const ctx = new AudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, ctx.currentTime);
+            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.4);
+        } catch (e) {
+            console.warn('AudioContext no soportado o bloqueado:', e);
+        }
+    }
+
     function startTimer(durationInSeconds, label, onComplete) {
         timerEndTime = Date.now() + (durationInSeconds * 1000);
         const timerEl = document.getElementById('timer');
@@ -282,6 +321,8 @@
             if (remaining <= 0) {
                 clearInterval(timerInterval);
                 timerEl.style.display = 'none';
+
+                playBeep();
 
                 if (navigator.vibrate) {
                     navigator.vibrate([500, 200, 500]);
@@ -309,7 +350,7 @@
     function selectExercise(exId) {
         if (activeExerciseId !== null && activeExerciseId !== exId) {
             const activeEx = exercises.find(e => e.id === activeExerciseId);
-            const currentSet = parseInt(localStorage.getItem(`set_current_${activeEx.id}`) || '1');
+            const currentSet = parseInt(localStorage.getItem(`set_current_${activeEx.id}`) || '1', 10);
             if (currentSet <= activeEx.totalSets) {
                 alert(`Debes completar todas las series de "${activeEx.name}" antes de iniciar otro ejercicio.`);
                 return;
@@ -340,7 +381,7 @@
         container.innerHTML = '';
 
         exercises.forEach((ex, exIdx) => {
-            const currentSet = parseInt(localStorage.getItem(`set_current_${ex.id}`) || '1');
+            const currentSet = parseInt(localStorage.getItem(`set_current_${ex.id}`) || '1', 10);
             const savedWeight = localStorage.getItem(`weight_${ex.id}`) || '';
             const isActive = activeExerciseId === ex.id;
             const isFinished = currentSet > ex.totalSets;
@@ -423,7 +464,7 @@
 
     function completeSet(exIdx) {
         const ex = exercises[exIdx];
-        let currentSet = parseInt(localStorage.getItem(`set_current_${ex.id}`) || '1');
+        let currentSet = parseInt(localStorage.getItem(`set_current_${ex.id}`) || '1', 10);
         const weight = localStorage.getItem(`weight_${ex.id}`) || '';
 
         if (currentSet <= ex.totalSets) {

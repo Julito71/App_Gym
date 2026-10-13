@@ -261,26 +261,47 @@
     ];
 
     let activeExerciseId = localStorage.getItem('active_exercise_id') ? parseInt(localStorage.getItem('active_exercise_id')) : null;
-    let bikeTimerInterval = null;
+    let timerEndTime = null;
+    let timerInterval = null;
+
+    // Usar marcas de tiempo reales (Timestamp) para evitar que el temporizador se pause al bloquear la pantalla o cambiar de app
+    function startTimer(durationInSeconds, label, onComplete) {
+        timerEndTime = Date.now() + (durationInSeconds * 1000);
+        const timerEl = document.getElementById('timer');
+        const countEl = document.getElementById('timer-count');
+        const labelEl = document.getElementById('timer-label');
+        
+        labelEl.textContent = label;
+        timerEl.style.display = 'flex';
+
+        if (timerInterval) clearInterval(timerInterval);
+
+        timerInterval = setInterval(() => {
+            const remaining = Math.round((timerEndTime - Date.now()) / 1000);
+
+            if (remaining <= 0) {
+                clearInterval(timerInterval);
+                timerEl.style.display = 'none';
+
+                if (navigator.vibrate) {
+                    navigator.vibrate([500, 200, 500]);
+                }
+
+                if (onComplete) onComplete();
+            } else {
+                const mins = Math.floor(remaining / 60);
+                const secs = remaining % 60;
+                countEl.textContent = mins > 0 ? `${mins}:${secs < 10 ? '0' : ''}${secs}` : `${secs}s`;
+            }
+        }, 500);
+    }
 
     function speakText(text) {
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'es-ES';
-            utterance.rate = 0.95;
-            
-            // Forzar la liberación del canal de audio para que Spotify reanude
-            utterance.onend = function() {
-                setTimeout(() => {
-                    // Genera un pulso invisible que le devuelve el foco multimedia a iOS
-                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    if (audioContext.state === 'suspended') {
-                        audioContext.resume();
-                    }
-                }, 200);
-            };
-
+            utterance.rate = 1.0;
             window.speechSynthesis.speak(utterance);
         }
     }
@@ -304,39 +325,14 @@
 
     function startBikeTimer(exIdx) {
         selectExercise(1);
-        let bikeTime = 300; 
-        const timerEl = document.getElementById('timer');
-        const countEl = document.getElementById('timer-count');
-        const labelEl = document.getElementById('timer-label');
-        
-        labelEl.textContent = "🚴 Calentamiento Bici:";
-        timerEl.style.display = 'flex';
-
-        if (bikeTimerInterval) clearInterval(bikeTimerInterval);
-
-        bikeTimerInterval = setInterval(() => {
-            bikeTime--;
-            const mins = Math.floor(bikeTime / 60);
-            const secs = bikeTime % 60;
-            countEl.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-
-            if (bikeTime <= 0) {
-                clearInterval(bikeTimerInterval);
-                timerEl.style.display = 'none';
-
-                if (navigator.vibrate) {
-                    navigator.vibrate([500, 200, 500]);
-                }
-
-                logHistory("5 min Calentamiento Bici", 1, "Sin peso");
-                localStorage.setItem(`set_current_1`, 2);
-                localStorage.removeItem('active_exercise_id');
-                activeExerciseId = null;
-                renderExercises();
-
-                speakText("Calentamiento de bici completado. Selecciona tu siguiente ejercicio.");
-            }
-        }, 1000);
+        startTimer(300, "🚴 Calentamiento Bici:", () => {
+            logHistory("5 min Calentamiento Bici", 1, "Sin peso");
+            localStorage.setItem(`set_current_1`, 2);
+            localStorage.removeItem('active_exercise_id');
+            activeExerciseId = null;
+            renderExercises();
+            speakText("Calentamiento de bici completado. Selecciona tu siguiente ejercicio.");
+        });
     }
 
     function renderExercises() {
@@ -419,7 +415,7 @@
             });
             localStorage.removeItem('active_exercise_id');
             activeExerciseId = null;
-            if (bikeTimerInterval) clearInterval(bikeTimerInterval);
+            if (timerInterval) clearInterval(timerInterval);
             document.getElementById('timer').style.display = 'none';
             renderExercises();
         }
@@ -447,14 +443,6 @@
             navigator.vibrate([200, 100, 200]);
         }
 
-        let timeLeft = 60;
-        const timerEl = document.getElementById('timer');
-        const countEl = document.getElementById('timer-count');
-        const labelEl = document.getElementById('timer-label');
-        
-        labelEl.textContent = "⏱️ Descanso:";
-        timerEl.style.display = 'flex';
-
         let nextMsg = "";
         if (currentSet <= ex.totalSets) {
             nextMsg = `Siguiente: Serie ${currentSet} de ${ex.name}`;
@@ -462,21 +450,9 @@
             nextMsg = `Completaste ${ex.name}. Selecciona tu siguiente ejercicio.`;
         }
 
-        const interval = setInterval(() => {
-            timeLeft--;
-            countEl.textContent = `${timeLeft}s`;
-
-            if (timeLeft <= 0) {
-                clearInterval(interval);
-                timerEl.style.display = 'none';
-
-                if (navigator.vibrate) {
-                    navigator.vibrate([500, 200, 500]);
-                }
-
-                speakText(`Descanso terminado. ${nextMsg}`);
-            }
-        }, 1000);
+        startTimer(60, "⏱️ Descanso:", () => {
+            speakText(`Descanso terminado. ${nextMsg}`);
+        });
     }
 
     renderExercises();

@@ -167,6 +167,22 @@
             opacity: 0.6;
         }
 
+        .bike-timer-box {
+            background: rgba(10, 132, 255, 0.1);
+            border: 1px solid var(--accent-color);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .bike-timer-display {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--accent-color);
+            font-variant-numeric: tabular-nums;
+        }
+
         .timer-overlay {
             position: fixed;
             bottom: 30px;
@@ -220,7 +236,7 @@
 <div class="container">
     <header>
         <h1>Mi Rutina Personal</h1>
-        <p style="color: var(--text-secondary); margin:0;">Modo Apple Fitness Libre</p>
+        <p style="color: var(--text-secondary); margin:0;">Modo Apple Fitness con Voz</p>
     </header>
 
     <div class="action-bar">
@@ -246,7 +262,7 @@
 
 <script>
     const exercises = [
-        { id: 1, name: "5 min Calentamiento Bici", totalSets: 1, weights: false, reps: "5 min" },
+        { id: 1, name: "5 min Calentamiento Bici", totalSets: 1, weights: false, reps: "5 min", isBike: true },
         { id: 2, name: "Pecho Banco Inclinado", totalSets: 3, weights: true, reps: "15 reps" },
         { id: 3, name: "Bíceps", totalSets: 3, weights: true, reps: "15 reps" },
         { id: 4, name: "Abdominales Laterales de Pie", totalSets: 3, weights: true, reps: "15 reps" },
@@ -261,9 +277,11 @@
     ];
 
     let activeExerciseId = localStorage.getItem('active_exercise_id') ? parseInt(localStorage.getItem('active_exercise_id')) : null;
+    let bikeTimerInterval = null;
 
     function speakText(text) {
         if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'es-ES';
             utterance.rate = 1.0;
@@ -276,14 +294,55 @@
             const activeEx = exercises.find(e => e.id === activeExerciseId);
             const currentSet = parseInt(localStorage.getItem(`set_current_${activeEx.id}`) || '1');
             if (currentSet <= activeEx.totalSets) {
-                alert(`Debes completar todas las series de "${activeEx.name}" antes de iniciar otro ejercicio.`);
+                alert(`Debes completar todas las series de "${activeEx.name}" antes de cambiar de ejercicio.`);
                 return;
             }
         }
 
         activeExerciseId = exId;
         localStorage.setItem('active_exercise_id', exId);
+        const ex = exercises.find(e => e.id === exId);
+        
+        speakText(`Iniciando ${ex.name}`);
         renderExercises();
+
+        if (ex.isBike) {
+            startBikeTimer();
+        }
+    }
+
+    function startBikeTimer() {
+        if (bikeTimerInterval) clearInterval(bikeTimerInterval);
+        
+        let timeLeft = parseInt(localStorage.getItem('bike_time_left') || '300'); // 300s = 5 min
+
+        const updateDisplay = () => {
+            const mins = Math.floor(timeLeft / 60);
+            const secs = timeLeft % 60;
+            const displayEl = document.getElementById('bike-timer-count');
+            if (displayEl) {
+                displayEl.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            }
+        };
+
+        updateDisplay();
+
+        bikeTimerInterval = setInterval(() => {
+            timeLeft--;
+            localStorage.setItem('bike_time_left', timeLeft);
+            updateDisplay();
+
+            if (timeLeft <= 0) {
+                clearInterval(bikeTimerInterval);
+                localStorage.removeItem('bike_time_left');
+                
+                if (navigator.vibrate) {
+                    navigator.vibrate([500, 200, 500]);
+                }
+                speakText("¡Calentamiento en bici completado! Ya puedes seleccionar tu siguiente ejercicio.");
+                completeSet(0); // Completar automáticamente el ejercicio de la bici
+            }
+        }, 1000);
     }
 
     function renderExercises() {
@@ -305,16 +364,25 @@
                     <span class="set-badge">${isFinished ? 'Completado' : `Serie ${Math.min(currentSet, ex.totalSets)} /${ex.totalSets}`}</span>
                 </div>
                 <div class="set-row">
-                    <span class="set-info">${ex.weights ? 'Peso:' : 'Sin peso'}</span>
+                    <span class="set-info">${ex.weights ? 'Peso:' : (ex.isBike ? 'Calentamiento' : 'Sin peso')}</span>
                     ${ex.weights ? `<input type="number" inputmode="decimal" pattern="[0-9]*" id="input_${ex.id}" value="${savedWeight}" placeholder="kg" onchange="saveWeight(${ex.id}, this.value)">` : ''}
                     ${isFinished ? 
                         `<button class="btn-action completed">✓ Hecho</button>` :
                         (isActive ? 
-                            `<button class="btn-action" onclick="completeSet(${exIdx})">Completar Serie</button>` : 
+                            (ex.isBike ? 
+                                `<button class="btn-action" onclick="completeSet(${exIdx})">Terminar Bici</button>` :
+                                `<button class="btn-action" onclick="completeSet(${exIdx})">Completar Serie</button>`
+                            ) : 
                             `<button class="btn-action ${isBlocked ? 'disabled' : ''}" onclick="selectExercise(${ex.id})">Seleccionar</button>`
                         )
                     }
                 </div>
+                ${(isActive && ex.isBike && !isFinished) ? `
+                    <div class="bike-timer-box">
+                        <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 4px;">Tiempo de Pedaleo Restante</div>
+                        <div class="bike-timer-display" id="bike-timer-count">05:00</div>
+                    </div>
+                ` : ''}
             `;
             container.appendChild(card);
         });
@@ -355,12 +423,15 @@
 
     function resetRoutine() {
         if (confirm("¿Quieres reiniciar el progreso de las series de hoy?")) {
+            if (bikeTimerInterval) clearInterval(bikeTimerInterval);
+            localStorage.removeItem('bike_time_left');
             exercises.forEach(ex => {
                 localStorage.removeItem(`set_current_${ex.id}`);
             });
             localStorage.removeItem('active_exercise_id');
             activeExerciseId = null;
             renderExercises();
+            speakText("Rutina reiniciada. Selecciona tu primer ejercicio.");
         }
     }
 
@@ -378,6 +449,10 @@
         if (currentSet > ex.totalSets) {
             localStorage.removeItem('active_exercise_id');
             activeExerciseId = null;
+            if (ex.isBike && bikeTimerInterval) {
+                clearInterval(bikeTimerInterval);
+                localStorage.removeItem('bike_time_left');
+            }
         }
 
         renderExercises();
@@ -386,17 +461,18 @@
             navigator.vibrate([200, 100, 200]);
         }
 
+        // Avisos de voz
+        if (currentSet <= ex.totalSets) {
+            speakText(`Serie ${currentSet - 1} completada. Iniciando descanso de un minuto.`);
+        } else {
+            speakText(`¡Excelente! Completaste todas las series de ${ex.name}. Puedes seleccionar tu siguiente ejercicio.`);
+            return; // No arranca timer si completó todo el ejercicio
+        }
+
         let timeLeft = 60;
         const timerEl = document.getElementById('timer');
         const countEl = document.getElementById('timer-count');
         timerEl.style.display = 'flex';
-
-        let nextMsg = "";
-        if (currentSet <= ex.totalSets) {
-            nextMsg = `Siguiente: Serie ${currentSet} de ${ex.name}`;
-        } else {
-            nextMsg = `Completaste ${ex.name}. Puedes seleccionar tu siguiente ejercicio.`;
-        }
 
         const interval = setInterval(() => {
             timeLeft--;
@@ -410,7 +486,7 @@
                     navigator.vibrate([500, 200, 500]);
                 }
 
-                speakText(`Descanso terminado. ${nextMsg}`);
+                speakText(`Descanso terminado. Siguiente: Serie ${currentSet} de ${ex.name}`);
             }
         }, 1000);
     }

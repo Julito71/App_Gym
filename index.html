@@ -63,6 +63,7 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
+            text-decoration: none;
         }
 
         .btn-reset {
@@ -223,7 +224,7 @@
     </header>
 
     <div class="action-bar">
-        <button class="btn-spotify" onclick="startSpotify()">🎵 Abrir Spotify</button>
+        <a href="spotify://" class="btn-spotify">🎵 Abrir Spotify</a>
         <button class="btn-reset" onclick="resetRoutine()">🔄 Resetear</button>
     </div>
 
@@ -243,8 +244,6 @@
     <span class="timer-text" id="timer-count">60s</span>
 </div>
 
-<iframe id="spotify-frame" style="display:none;"></iframe>
-
 <script>
     const exercises = [
         { id: 1, name: "5 min Calentamiento Bici", totalSets: 1, weights: false, reps: "5 min" },
@@ -263,14 +262,8 @@
 
     let activeExerciseId = localStorage.getItem('active_exercise_id') ? parseInt(localStorage.getItem('active_exercise_id')) : null;
 
-    function startSpotify() {
-        document.getElementById('spotify-frame').src = "spotify://";
-        speakText("Spotify abierto. Selecciona tu ejercicio para comenzar.");
-    }
-
     function speakText(text) {
         if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'es-ES';
             utterance.rate = 1.0;
@@ -290,8 +283,6 @@
 
         activeExerciseId = exId;
         localStorage.setItem('active_exercise_id', exId);
-        const ex = exercises.find(e => e.id === exId);
-        speakText(`Iniciando ${ex.name}`);
         renderExercises();
     }
 

@@ -269,6 +269,18 @@
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'es-ES';
             utterance.rate = 0.95;
+            
+            // Forzar la liberación del canal de audio para que Spotify reanude
+            utterance.onend = function() {
+                setTimeout(() => {
+                    // Genera un pulso invisible que le devuelve el foco multimedia a iOS
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    if (audioContext.state === 'suspended') {
+                        audioContext.resume();
+                    }
+                }, 200);
+            };
+
             window.speechSynthesis.speak(utterance);
         }
     }
@@ -292,7 +304,7 @@
 
     function startBikeTimer(exIdx) {
         selectExercise(1);
-        let bikeTime = 300; // 5 minutos = 300 segundos
+        let bikeTime = 300; 
         const timerEl = document.getElementById('timer');
         const countEl = document.getElementById('timer-count');
         const labelEl = document.getElementById('timer-label');
@@ -322,7 +334,7 @@
                 activeExerciseId = null;
                 renderExercises();
 
-                speakText("Calentamiento de bici completado. Puedes seleccionar tu siguiente ejercicio.");
+                speakText("Calentamiento de bici completado. Selecciona tu siguiente ejercicio.");
             }
         }, 1000);
     }
@@ -447,7 +459,7 @@
         if (currentSet <= ex.totalSets) {
             nextMsg = `Siguiente: Serie ${currentSet} de ${ex.name}`;
         } else {
-            nextMsg = `Completaste ${ex.name}. Puedes seleccionar tu siguiente ejercicio.`;
+            nextMsg = `Completaste ${ex.name}. Selecciona tu siguiente ejercicio.`;
         }
 
         const interval = setInterval(() => {

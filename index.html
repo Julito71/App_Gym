@@ -159,6 +159,13 @@
             color: #000;
         }
 
+        .btn-action.disabled {
+            background: #2c2c2e;
+            color: var(--text-secondary);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
         .timer-overlay {
             position: fixed;
             bottom: 30px;
@@ -194,6 +201,9 @@
             font-weight: 600;
             margin-bottom: 10px;
             color: var(--accent-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .history-item {
@@ -209,7 +219,7 @@
 <div class="container">
     <header>
         <h1>Mi Rutina Personal</h1>
-        <p style="color: var(--text-secondary); margin:0;">Modo Libre Apple Fitness</p>
+        <p style="color: var(--text-secondary); margin:0;">Modo Apple Fitness Libre</p>
     </header>
 
     <div class="action-bar">
@@ -220,7 +230,10 @@
     <div id="exercises-list"></div>
 
     <div class="history-section">
-        <div class="history-title">📜 Historial de Sesiones</div>
+        <div class="history-title">
+            <span>📜 Historial Acumulado</span>
+            <button onclick="clearHistory()" style="background:none; border:none; color:var(--danger-color); font-size:12px; cursor:pointer;">Borrar Historial</button>
+        </div>
         <div id="history-list"></div>
     </div>
 </div>
@@ -229,6 +242,8 @@
     <span>⏱️ Descanso:</span>
     <span class="timer-text" id="timer-count">60s</span>
 </div>
+
+<iframe id="spotify-frame" style="display:none;"></iframe>
 
 <script>
     const exercises = [
@@ -249,8 +264,8 @@
     let activeExerciseId = localStorage.getItem('active_exercise_id') ? parseInt(localStorage.getItem('active_exercise_id')) : null;
 
     function startSpotify() {
-        window.location.href = "spotify://";
-        speakText("Entrenamiento iniciado. Selecciona el ejercicio que vas a realizar.");
+        document.getElementById('spotify-frame').src = "spotify://";
+        speakText("Spotify abierto. Selecciona tu ejercicio para comenzar.");
     }
 
     function speakText(text) {
@@ -264,6 +279,15 @@
     }
 
     function selectExercise(exId) {
+        if (activeExerciseId !== null && activeExerciseId !== exId) {
+            const activeEx = exercises.find(e => e.id === activeExerciseId);
+            const currentSet = parseInt(localStorage.getItem(`set_current_${activeEx.id}`) || '1');
+            if (currentSet <= activeEx.totalSets) {
+                alert(`Debes completar todas las series de "${activeEx.name}" antes de iniciar otro ejercicio.`);
+                return;
+            }
+        }
+
         activeExerciseId = exId;
         localStorage.setItem('active_exercise_id', exId);
         const ex = exercises.find(e => e.id === exId);
@@ -280,6 +304,7 @@
             const savedWeight = localStorage.getItem(`weight_${ex.id}`) || '';
             const isActive = activeExerciseId === ex.id;
             const isFinished = currentSet > ex.totalSets;
+            const isBlocked = activeExerciseId !== null && activeExerciseId !== ex.id && !isFinished;
 
             const card = document.createElement('div');
             card.className = `exercise-card ${isActive ? 'active' : ''}`;
@@ -295,7 +320,7 @@
                         `<button class="btn-action completed">✓ Hecho</button>` :
                         (isActive ? 
                             `<button class="btn-action" onclick="completeSet(${exIdx})">Completar Serie</button>` : 
-                            `<button class="btn-action" style="background:#3a3a3c" onclick="selectExercise(${ex.id})">Seleccionar</button>`
+                            `<button class="btn-action ${isBlocked ? 'disabled' : ''}" onclick="selectExercise(${ex.id})">Seleccionar</button>`
                         )
                     }
                 </div>
@@ -311,29 +336,34 @@
     }
 
     function logHistory(exerciseName, setNum, weight) {
-        const history = JSON.parse(localStorage.getItem('routine_history') || '[]');
+        const history = JSON.parse(localStorage.getItem('routine_history_full') || '[]');
         const now = new Date();
         const timeStr = `${now.toLocaleDateString()} ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
         
         history.unshift({ time: timeStr, text: `${exerciseName} - Serie ${setNum} (${weight ? weight + ' kg' : 'Sin peso'})` });
-        if (history.length > 20) history.pop();
-
-        localStorage.setItem('routine_history', JSON.stringify(history));
+        localStorage.setItem('routine_history_full', JSON.stringify(history));
         renderHistory();
     }
 
     function renderHistory() {
         const historyEl = document.getElementById('history-list');
-        const history = JSON.parse(localStorage.getItem('routine_history') || '[]');
+        const history = JSON.parse(localStorage.getItem('routine_history_full') || '[]');
         if (history.length === 0) {
-            historyEl.innerHTML = '<div class="history-item">No hay registros aún.</div>';
+            historyEl.innerHTML = '<div class="history-item">No hay registros guardados aún.</div>';
             return;
         }
-        historyEl.innerHTML = history.map(item => `<div class="history-item"><strong>${item.time}:</strong> ${item.text}</div>`).join('');
+        historyEl.innerHTML = history.slice(0, 30).map(item => `<div class="history-item"><strong>${item.time}:</strong> ${item.text}</div>`).join('');
+    }
+
+    function clearHistory() {
+        if (confirm("¿Deseas borrar todo el historial acumulado?")) {
+            localStorage.removeItem('routine_history_full');
+            renderHistory();
+        }
     }
 
     function resetRoutine() {
-        if (confirm("¿Quieres reiniciar el progreso de la rutina de hoy?")) {
+        if (confirm("¿Quieres reiniciar el progreso de las series de hoy?")) {
             exercises.forEach(ex => {
                 localStorage.removeItem(`set_current_${ex.id}`);
             });
@@ -354,6 +384,11 @@
             localStorage.setItem(`set_current_${ex.id}`, currentSet);
         }
 
+        if (currentSet > ex.totalSets) {
+            localStorage.removeItem('active_exercise_id');
+            activeExerciseId = null;
+        }
+
         renderExercises();
 
         if (navigator.vibrate) {
@@ -369,7 +404,7 @@
         if (currentSet <= ex.totalSets) {
             nextMsg = `Siguiente: Serie ${currentSet} de ${ex.name}`;
         } else {
-            nextMsg = `Completaste ${ex.name}. Selecciona tu siguiente ejercicio libremente.`;
+            nextMsg = `Completaste ${ex.name}. Puedes seleccionar tu siguiente ejercicio.`;
         }
 
         const interval = setInterval(() => {

@@ -8,6 +8,7 @@
         :root {
             --bg-color: #000000;
             --card-bg: #1c1c1e;
+            --card-active: #2c2c2e;
             --accent-color: #0a84ff;
             --text-color: #ffffff;
             --text-secondary: #8e8e93;
@@ -83,6 +84,12 @@
             margin-bottom: 16px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.5);
             border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.2s ease;
+        }
+
+        .exercise-card.active {
+            border: 2px solid var(--accent-color);
+            background: var(--card-active);
         }
 
         .exercise-header {
@@ -93,27 +100,9 @@
         }
 
         .exercise-title {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 600;
             color: var(--text-color);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .reorder-btns {
-            display: flex;
-            gap: 4px;
-        }
-
-        .btn-reorder {
-            background: #2c2c2e;
-            border: none;
-            color: #fff;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            cursor: pointer;
         }
 
         .set-badge {
@@ -154,7 +143,7 @@
             outline: none;
         }
 
-        .btn-check {
+        .btn-action {
             background: var(--accent-color);
             color: #fff;
             border: none;
@@ -165,7 +154,7 @@
             cursor: pointer;
         }
 
-        .btn-check.completed {
+        .btn-action.completed {
             background: var(--success-color);
             color: #000;
         }
@@ -220,7 +209,7 @@
 <div class="container">
     <header>
         <h1>Mi Rutina Personal</h1>
-        <p style="color: var(--text-secondary); margin:0;">Modo Apple Fitness</p>
+        <p style="color: var(--text-secondary); margin:0;">Modo Libre Apple Fitness</p>
     </header>
 
     <div class="action-bar">
@@ -242,7 +231,7 @@
 </div>
 
 <script>
-    const defaultExercises = [
+    const exercises = [
         { id: 1, name: "5 min Calentamiento Bici", totalSets: 1, weights: false, reps: "5 min" },
         { id: 2, name: "Pecho Banco Inclinado", totalSets: 3, weights: true, reps: "15 reps" },
         { id: 3, name: "Bíceps", totalSets: 3, weights: true, reps: "15 reps" },
@@ -257,11 +246,11 @@
         { id: 12, name: "Dorsales Pecho", totalSets: 3, weights: true, reps: "15 reps" }
     ];
 
-    let exercises = JSON.parse(localStorage.getItem('routine_order')) || defaultExercises;
+    let activeExerciseId = localStorage.getItem('active_exercise_id') ? parseInt(localStorage.getItem('active_exercise_id')) : null;
 
     function startSpotify() {
         window.location.href = "spotify://";
-        speakText("Entrenamiento iniciado. ¡A entrenar!");
+        speakText("Entrenamiento iniciado. Selecciona el ejercicio que vas a realizar.");
     }
 
     function speakText(text) {
@@ -274,19 +263,11 @@
         }
     }
 
-    function saveOrder() {
-        localStorage.setItem('routine_order', JSON.stringify(exercises));
-    }
-
-    function moveExercise(idx, direction) {
-        const newIdx = idx + direction;
-        if (newIdx < 0 || newIdx >= exercises.length) return;
-
-        const temp = exercises[idx];
-        exercises[idx] = exercises[newIdx];
-        exercises[newIdx] = temp;
-
-        saveOrder();
+    function selectExercise(exId) {
+        activeExerciseId = exId;
+        localStorage.setItem('active_exercise_id', exId);
+        const ex = exercises.find(e => e.id === exId);
+        speakText(`Iniciando ${ex.name}`);
         renderExercises();
     }
 
@@ -297,26 +278,26 @@
         exercises.forEach((ex, exIdx) => {
             const currentSet = parseInt(localStorage.getItem(`set_current_${ex.id}`) || '1');
             const savedWeight = localStorage.getItem(`weight_${ex.id}`) || '';
+            const isActive = activeExerciseId === ex.id;
+            const isFinished = currentSet > ex.totalSets;
 
             const card = document.createElement('div');
-            card.className = 'exercise-card';
+            card.className = `exercise-card ${isActive ? 'active' : ''}`;
             card.innerHTML = `
                 <div class="exercise-header">
-                    <div class="exercise-title">
-                        <div class="reorder-btns">
-                            <button class="btn-reorder" onclick="moveExercise(${exIdx}, -1)">▲</button>
-                            <button class="btn-reorder" onclick="moveExercise(${exIdx}, 1)">▼</button>
-                        </div>
-                        <span>${exIdx + 1}. ${ex.name}</span>
-                    </div>
-                    <span class="set-badge">Serie ${Math.min(currentSet, ex.totalSets)} / ${ex.totalSets}</span>
+                    <span class="exercise-title">${exIdx + 1}. ${ex.name} (${ex.reps})</span>
+                    <span class="set-badge">${isFinished ? 'Completado' : `Serie ${Math.min(currentSet, ex.totalSets)} /${ex.totalSets}`}</span>
                 </div>
                 <div class="set-row">
-                    <span class="set-info">(${ex.reps})</span>
-                    ${ex.weights ? `<input type="number" inputmode="decimal" pattern="[0-9]*" id="input_${ex.id}" value="${savedWeight}" placeholder="kg" onchange="saveWeight(${ex.id}, this.value)">` : '<span style="font-size:13px; color:var(--text-secondary);">Sin peso</span>'}
-                    <button class="btn-check ${currentSet > ex.totalSets ? 'completed' : ''}" onclick="completeSet(${exIdx})">
-                        ${currentSet > ex.totalSets ? '✓ Completo' : 'Completar'}
-                    </button>
+                    <span class="set-info">${ex.weights ? 'Peso:' : 'Sin peso'}</span>
+                    ${ex.weights ? `<input type="number" inputmode="decimal" pattern="[0-9]*" id="input_${ex.id}" value="${savedWeight}" placeholder="kg" onchange="saveWeight(${ex.id}, this.value)">` : ''}
+                    ${isFinished ? 
+                        `<button class="btn-action completed">✓ Hecho</button>` :
+                        (isActive ? 
+                            `<button class="btn-action" onclick="completeSet(${exIdx})">Completar Serie</button>` : 
+                            `<button class="btn-action" style="background:#3a3a3c" onclick="selectExercise(${ex.id})">Seleccionar</button>`
+                        )
+                    }
                 </div>
             `;
             container.appendChild(card);
@@ -335,7 +316,7 @@
         const timeStr = `${now.toLocaleDateString()} ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
         
         history.unshift({ time: timeStr, text: `${exerciseName} - Serie ${setNum} (${weight ? weight + ' kg' : 'Sin peso'})` });
-        if (history.length > 20) history.pop(); // Mantener ultimos 20 registros
+        if (history.length > 20) history.pop();
 
         localStorage.setItem('routine_history', JSON.stringify(history));
         renderHistory();
@@ -356,6 +337,8 @@
             exercises.forEach(ex => {
                 localStorage.removeItem(`set_current_${ex.id}`);
             });
+            localStorage.removeItem('active_exercise_id');
+            activeExerciseId = null;
             renderExercises();
         }
     }
@@ -385,10 +368,8 @@
         let nextMsg = "";
         if (currentSet <= ex.totalSets) {
             nextMsg = `Siguiente: Serie ${currentSet} de ${ex.name}`;
-        } else if (exercises[exIdx + 1]) {
-            nextMsg = `Siguiente ejercicio: ${exercises[exIdx + 1].name}`;
         } else {
-            nextMsg = "¡Felicitaciones, completaste toda la rutina!";
+            nextMsg = `Completaste ${ex.name}. Selecciona tu siguiente ejercicio libremente.`;
         }
 
         const interval = setInterval(() => {

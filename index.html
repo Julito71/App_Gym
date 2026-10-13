@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Mi Rutina - Apple Style</title>
+    <title>Fitia & Gym - Apple Style</title>
     <style>
         :root {
             --bg-color: #000000;
@@ -15,35 +15,105 @@
             --success-color: #30d158;
             --warning-color: #ffd60a;
             --danger-color: #ff453a;
+            --fitia-green: #34c759;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            padding: 16px;
             -webkit-font-smoothing: antialiased;
         }
 
         .container {
             max-width: 500px;
             margin: 0 auto;
-            padding-bottom: 110px;
+            padding-bottom: 120px;
         }
 
         header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         h1 {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 700;
             margin: 0 0 4px 0;
-            letter-spacing: -0.5px;
         }
 
+        /* Pestañas de Navegación Estilo Fitia */
+        .nav-tabs {
+            display: flex;
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 4px;
+            margin-bottom: 20px;
+        }
+
+        .nav-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-tab.active {
+            background: var(--accent-color);
+            color: #fff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Estilo Dashboards Fitia */
+        .fitia-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .macros-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .macro-box {
+            background: rgba(255,255,255,0.03);
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .macro-val {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .macro-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Acciones Principales */
         .action-bar {
             display: flex;
             gap: 10px;
@@ -65,11 +135,6 @@
             justify-content: center;
             gap: 6px;
             text-decoration: none;
-            transition: opacity 0.2s;
-        }
-
-        .btn-spotify:active {
-            opacity: 0.8;
         }
 
         .btn-reset {
@@ -82,13 +147,9 @@
             font-size: 14px;
             cursor: pointer;
             flex: 1;
-            transition: opacity 0.2s;
         }
 
-        .btn-reset:active {
-            opacity: 0.8;
-        }
-
+        /* Tarjetas de Ejercicios */
         .exercise-card {
             background: var(--card-bg);
             border-radius: 16px;
@@ -155,10 +216,6 @@
             outline: none;
         }
 
-        input[type="number"]:focus {
-            border-color: var(--accent-color);
-        }
-
         .btn-action {
             background: var(--accent-color);
             color: #fff;
@@ -168,11 +225,6 @@
             font-weight: 600;
             font-size: 14px;
             cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        .btn-action:active {
-            opacity: 0.8;
         }
 
         .btn-action.completed {
@@ -187,6 +239,7 @@
             opacity: 0.6;
         }
 
+        /* Overlay de Cronómetro */
         .timer-overlay {
             position: fixed;
             bottom: 30px;
@@ -194,7 +247,6 @@
             transform: translateX(-50%);
             background: rgba(44, 44, 46, 0.95);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
             border-radius: 30px;
             padding: 14px 28px;
             display: none;
@@ -212,20 +264,10 @@
         }
 
         .history-section {
-            margin-top: 30px;
+            margin-top: 20px;
             background: var(--card-bg);
             border-radius: 16px;
             padding: 16px;
-        }
-
-        .history-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--accent-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
         .history-item {
@@ -240,23 +282,71 @@
 
 <div class="container">
     <header>
-        <h1>Mi Rutina Personal</h1>
-        <p style="color: var(--text-secondary); margin:0;">Modo Apple Fitness Libre</p>
+        <h1>Fitia & Gym Pro</h1>
+        <p style="color: var(--text-secondary); margin:0;">Diseño iOS & Nutrición Inteligente</p>
     </header>
 
-    <div class="action-bar">
-        <a href="spotify://" class="btn-spotify">🎵 Abrir Spotify</a>
-        <button class="btn-reset" onclick="resetRoutine()">🔄 Resetear</button>
+    <!-- Pestañas de Navegación -->
+    <div class="nav-tabs">
+        <div class="nav-tab active" onclick="switchTab('workout')">🏋️‍♂️ Rutina</div>
+        <div class="nav-tab" onclick="switchTab('nutrition')">🥗 Nutrición</div>
     </div>
 
-    <div id="exercises-list"></div>
-
-    <div class="history-section">
-        <div class="history-title">
-            <span>📜 Historial Acumulado</span>
-            <button onclick="clearHistory()" style="background:none; border:none; color:var(--danger-color); font-size:12px; cursor:pointer;">Borrar Historial</button>
+    <!-- PESTAÑA RUTINA -->
+    <div id="tab-workout" class="tab-content active">
+        <div class="action-bar">
+            <a href="spotify://" class="btn-spotify">🎵 Abrir Spotify</a>
+            <button class="btn-reset" onclick="resetRoutine()">🔄 Resetear</button>
         </div>
-        <div id="history-list"></div>
+
+        <div id="exercises-list"></div>
+
+        <div class="history-section">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <span style="font-weight:600; color:var(--accent-color);">📜 Historial Acumulado</span>
+                <button onclick="clearHistory()" style="background:none; border:none; color:var(--danger-color); font-size:12px; cursor:pointer;">Borrar</button>
+            </div>
+            <div id="history-list"></div>
+        </div>
+    </div>
+
+    <!-- PESTAÑA NUTRICIÓN (Estilo Fitia) -->
+    <div id="tab-nutrition" class="tab-content">
+        <div class="fitia-card">
+            <h3 style="margin:0 0 10px 0; font-size: 17px;">🔥 Control de Calorías (Objetivo)</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <span style="font-size: 28px; font-weight:700;" id="consumed-calories">0</span>
+                    <span style="color:var(--text-secondary);">/ 2,200 kcal</span>
+                </div>
+                <button class="btn-action" onclick="addMeal()">+ Registrar Comida</button>
+            </div>
+            <div class="macros-grid">
+                <div class="macro-box">
+                    <div class="macro-val" id="macro-prot">0g</div>
+                    <div class="macro-label">Proteínas</div>
+                </div>
+                <div class="macro-box">
+                    <div class="macro-val" id="macro-carb">0g</div>
+                    <div class="macro-label">Carbos</div>
+                </div>
+                <div class="macro-box">
+                    <div class="macro-val" id="macro-fat">0g</div>
+                    <div class="macro-label">Grasas</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="fitia-card">
+            <h3 style="margin:0 0 10px 0; font-size: 17px;">💧 Hidratación Diaria</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <span style="font-size: 24px; font-weight:700;" id="water-count">0</span>
+                    <span style="color:var(--text-secondary);">/ 2.5 L</span>
+                </div>
+                <button class="btn-action" onclick="addWater()">+ Vaso (250ml)</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -281,26 +371,20 @@
         { id: 12, name: "Dorsales Pecho", totalSets: 3, weights: true, reps: "15 reps" }
     ];
 
-    let activeExerciseId = localStorage.getItem('active_exercise_id') ? parseInt(localStorage.getItem('active_exercise_id'), 10) : null;
+    let activeExerciseId = localStorage.getItem('active_exercise_id') ? parseInt(localStorage.getItem('active_exercise_id')) : null;
     let timerEndTime = null;
     let timerInterval = null;
 
-    function playBeep() {
-        try {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            if (!AudioContext) return;
-            const ctx = new AudioContext();
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(880, ctx.currentTime);
-            gain.gain.setValueAtTime(0.3, ctx.currentTime);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start();
-            osc.stop(ctx.currentTime + 0.4);
-        } catch (e) {
-            console.warn('AudioContext no soportado o bloqueado:', e);
+    function switchTab(tabName) {
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        if (tabName === 'workout') {
+            document.querySelectorAll('.nav-tab')[0].classList.add('active');
+            document.getElementById('tab-workout').classList.add('active');
+        } else {
+            document.querySelectorAll('.nav-tab')[1].classList.add('active');
+            document.getElementById('tab-nutrition').classList.add('active');
+            loadNutritionData();
         }
     }
 
@@ -321,8 +405,6 @@
             if (remaining <= 0) {
                 clearInterval(timerInterval);
                 timerEl.style.display = 'none';
-
-                playBeep();
 
                 if (navigator.vibrate) {
                     navigator.vibrate([500, 200, 500]);
@@ -350,7 +432,7 @@
     function selectExercise(exId) {
         if (activeExerciseId !== null && activeExerciseId !== exId) {
             const activeEx = exercises.find(e => e.id === activeExerciseId);
-            const currentSet = parseInt(localStorage.getItem(`set_current_${activeEx.id}`) || '1', 10);
+            const currentSet = parseInt(localStorage.getItem(`set_current_${activeEx.id}`) || '1');
             if (currentSet <= activeEx.totalSets) {
                 alert(`Debes completar todas las series de "${activeEx.name}" antes de iniciar otro ejercicio.`);
                 return;
@@ -381,7 +463,7 @@
         container.innerHTML = '';
 
         exercises.forEach((ex, exIdx) => {
-            const currentSet = parseInt(localStorage.getItem(`set_current_${ex.id}`) || '1', 10);
+            const currentSet = parseInt(localStorage.getItem(`set_current_${ex.id}`) || '1');
             const savedWeight = localStorage.getItem(`weight_${ex.id}`) || '';
             const isActive = activeExerciseId === ex.id;
             const isFinished = currentSet > ex.totalSets;
@@ -464,7 +546,7 @@
 
     function completeSet(exIdx) {
         const ex = exercises[exIdx];
-        let currentSet = parseInt(localStorage.getItem(`set_current_${ex.id}`) || '1', 10);
+        let currentSet = parseInt(localStorage.getItem(`set_current_${ex.id}`) || '1');
         const weight = localStorage.getItem(`weight_${ex.id}`) || '';
 
         if (currentSet <= ex.totalSets) {
@@ -494,6 +576,40 @@
         startTimer(60, "⏱️ Descanso:", () => {
             speakText(`Descanso terminado. ${nextMsg}`);
         });
+    }
+
+    // Funciones estilo Fitia para Nutrición
+    function loadNutritionData() {
+        const calories = localStorage.getItem('fitia_calories') || '450';
+        const prot = localStorage.getItem('fitia_prot') || '45g';
+        const carb = localStorage.getItem('fitia_carb') || '60g';
+        const fat = localStorage.getItem('fitia_fat') || '15g';
+        const water = localStorage.getItem('fitia_water') || '1.2';
+
+        document.getElementById('consumed-calories').textContent = calories;
+        document.getElementById('macro-prot').textContent = prot;
+        document.getElementById('macro-carb').textContent = carb;
+        document.getElementById('macro-fat').textContent = fat;
+        document.getElementById('water-count').textContent = water + ' L';
+    }
+
+    function addMeal() {
+        let currentCals = parseInt(localStorage.getItem('fitia_calories') || '450');
+        currentCals += 350; // Sumar comida rápida de ejemplo
+        localStorage.setItem('fitia_calories', currentCals);
+        localStorage.setItem('fitia_prot', '75g');
+        localStorage.setItem('fitia_carb', '90g');
+        localStorage.setItem('fitia_fat', '25g');
+        loadNutritionData();
+        speakText("Comida registrada con éxito.");
+    }
+
+    function addWater() {
+        let currentWater = parseFloat(localStorage.getItem('fitia_water') || '1.2');
+        currentWater = parseFloat((currentWater + 0.25).toFixed(2));
+        if (currentWater > 3.0) currentWater = 3.0;
+        localStorage.setItem('fitia_water', currentWater);
+        loadNutritionData();
     }
 
     renderExercises();

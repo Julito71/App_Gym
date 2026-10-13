@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Gym & Fitness - Apple Style</title>
+    <title>Gym Pro - Apple Style</title>
     <style>
         :root {
             --ios-bg: #000000;
@@ -23,7 +23,7 @@
             background-color: var(--ios-bg);
             color: var(--ios-text);
             margin: 0;
-            padding: 20px 16px 100px 16px;
+            padding: 20px 16px 60px 16px;
             -webkit-font-smoothing: antialiased;
         }
 
@@ -32,12 +32,11 @@
             margin: 0 auto;
         }
 
-        /* Apple Header */
         .app-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             padding-top: 10px;
         }
 
@@ -54,7 +53,6 @@
             margin: 4px 0 0 0;
         }
 
-        /* Top Action Bar (Spotify & Reset) */
         .top-actions {
             display: flex;
             gap: 10px;
@@ -65,8 +63,8 @@
             background-color: #1db954;
             color: #000000;
             border: none;
-            padding: 10px 16px;
-            border-radius: 12px;
+            padding: 12px 16px;
+            border-radius: 14px;
             font-weight: 600;
             font-size: 14px;
             display: flex;
@@ -82,15 +80,14 @@
             background-color: var(--ios-card);
             color: var(--ios-red);
             border: 1px solid rgba(255, 69, 58, 0.2);
-            padding: 10px 16px;
-            border-radius: 12px;
+            padding: 12px 16px;
+            border-radius: 14px;
             font-weight: 600;
             font-size: 14px;
             cursor: pointer;
             flex: 1;
         }
 
-        /* Tarjetas de Ejercicio Estilo Apple Watch / Fitness */
         .exercise-card {
             background-color: var(--ios-card);
             border-radius: 20px;
@@ -149,7 +146,6 @@
             font-weight: 500;
         }
 
-        /* Inputs y Botones Estilo iOS */
         input[type="number"] {
             background: #3a3a3c;
             border: none;
@@ -172,11 +168,6 @@
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        .btn-action:active {
-            opacity: 0.7;
         }
 
         .btn-action.completed {
@@ -190,98 +181,6 @@
             cursor: not-allowed;
         }
 
-        /* Panel de Nutrición Estilo Fitia & Apple Health */
-        .health-card {
-            background-color: var(--ios-card);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 16px;
-            border: 1px solid var(--ios-border);
-        }
-
-        .health-title {
-            font-size: 17px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .macros-row {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 14px;
-            text-align: center;
-        }
-
-        .macro-cell {
-            background: rgba(255, 255, 255, 0.04);
-            padding: 12px 8px;
-            border-radius: 12px;
-        }
-
-        .macro-number {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--ios-text);
-        }
-
-        .macro-label {
-            font-size: 11px;
-            color: var(--ios-subtext);
-            margin-top: 2px;
-        }
-
-        /* Barra de Navegación Inferior Estilo iOS (Tab Bar) */
-        .ios-tabbar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(28, 28, 30, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid var(--ios-border);
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0 24px 0;
-            z-index: 1000;
-        }
-
-        .tab-item {
-            background: none;
-            border: none;
-            color: var(--ios-subtext);
-            font-size: 11px;
-            font-weight: 500;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            cursor: pointer;
-            width: 50%;
-        }
-
-        .tab-item.active {
-            color: var(--ios-blue);
-        }
-
-        .tab-icon {
-            font-size: 22px;
-        }
-
-        /* Contenedor de Pestañas */
-        .tab-pane {
-            display: none;
-        }
-
-        .tab-pane.active {
-            display: block;
-        }
-
-        /* Overlay Flotante de Descanso (Dynamic Island Style) */
         .timer-island {
             position: fixed;
             top: 16px;
@@ -332,86 +231,30 @@
     <header class="app-header">
         <div class="app-title-group">
             <h1>Entrenamiento</h1>
-            <p id="header-subtitle">Modo Libre Activo</p>
+            <p>Modo Libre Activo</p>
         </div>
     </header>
 
-    <!-- Barra Superior de Acciones Rápidas -->
     <div class="top-actions">
         <a href="spotify://" class="btn-ios-spotify">🎵 Abrir Spotify</a>
         <button class="btn-ios-secondary" onclick="resetRoutine()">Reiniciar</button>
     </div>
 
-    <!-- PESTAÑA 1: RUTINA -->
-    <div id="pane-workout" class="tab-pane active">
-        <div id="exercises-list"></div>
+    <div id="exercises-list"></div>
 
-        <div class="history-box">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <span style="font-weight:600; font-size:15px; color:var(--ios-blue);">Historial de Sesión</span>
-                <button onclick="clearHistory()" style="background:none; border:none; color:var(--ios-red); font-size:12px; cursor:pointer;">Limpiar</button>
-            </div>
-            <div id="history-list"></div>
+    <div class="history-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <span style="font-weight:600; font-size:15px; color:var(--ios-blue);">Historial de Sesión</span>
+            <button onclick="clearHistory()" style="background:none; border:none; color:var(--ios-red); font-size:12px; cursor:pointer;">Limpiar</button>
         </div>
-    </div>
-
-    <!-- PESTAÑA 2: NUTRICIÓN -->
-    <div id="pane-nutrition" class="tab-pane">
-        <div class="health-card">
-            <div class="health-title">🔥 Calorías Diarias</div>
-            <div style="display:flex; justify-content:space-between; align-items:baseline;">
-                <div>
-                    <span style="font-size: 32px; font-weight: 700;" id="consumed-calories">450</span>
-                    <span style="color: var(--ios-subtext);">/ 2,200 kcal</span>
-                </div>
-                <button class="btn-action" onclick="addMeal()">+ Registrar</button>
-            </div>
-            <div class="macros-row">
-                <div class="macro-cell">
-                    <div class="macro-number" id="macro-prot">45g</div>
-                    <div class="macro-label">Proteínas</div>
-                </div>
-                <div class="macro-cell">
-                    <div class="macro-number" id="macro-carb">60g</div>
-                    <div class="macro-label">Carbos</div>
-                </div>
-                <div class="macro-cell">
-                    <div class="macro-number" id="macro-fat">15g</div>
-                    <div class="macro-label">Grasas</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="health-card">
-            <div class="health-title">💧 Control de Agua</div>
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div>
-                    <span style="font-size: 28px; font-weight: 700;" id="water-count">1.2 L</span>
-                    <span style="color: var(--ios-subtext);">/ 2.5 L</span>
-                </div>
-                <button class="btn-action" onclick="addWater()">+ 250 ml</button>
-            </div>
-        </div>
+        <div id="history-list"></div>
     </div>
 </div>
 
-<!-- Dynamic Island Timer (Notificación Flotante Estilo iOS) -->
 <div class="timer-island" id="timer-island">
     <span id="timer-label">⏱️ Descanso</span>
     <span class="timer-value" id="timer-count">60s</span>
 </div>
-
-<!-- Tab Bar Inferior Estilo iOS -->
-<nav class="ios-tabbar">
-    <button class="tab-item active" onclick="switchTab('workout')" id="tab-btn-workout">
-        <span class="tab-icon">⚡️</span>
-        <span>Entreno</span>
-    </button>
-    <button class="tab-item" onclick="switchTab('nutrition')" id="tab-btn-nutrition">
-        <span class="tab-icon">🥗</span>
-        <span>Nutrición</span>
-    </button>
-</nav>
 
 <script>
     const exercises = [
@@ -432,20 +275,6 @@
     let activeExerciseId = localStorage.getItem('active_exercise_id') ? parseInt(localStorage.getItem('active_exercise_id')) : null;
     let timerEndTime = null;
     let timerInterval = null;
-
-    function switchTab(tabName) {
-        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-        
-        if (tabName === 'workout') {
-            document.getElementById('pane-workout').classList.add('active');
-            document.getElementById('tab-btn-workout').classList.add('active');
-        } else {
-            document.getElementById('pane-nutrition').classList.add('active');
-            document.getElementById('tab-btn-nutrition').classList.add('active');
-            loadNutritionData();
-        }
-    }
 
     function startTimer(durationInSeconds, label, onComplete) {
         timerEndTime = Date.now() + (durationInSeconds * 1000);
@@ -545,7 +374,7 @@
             card.innerHTML = `
                 <div class="exercise-header">
                     <span class="exercise-name">${exIdx + 1}. ${ex.name}</span>
-                    <span class="exercise-badge">${isFinished ? '✓' : `Serie ${Math.min(currentSet, ex.totalSets)}/${ex.totalSets}`}</span>
+                    <span class="exercise-badge ${isFinished ? 'completed' : ''}">${isFinished ? '✓' : `Serie ${Math.min(currentSet, ex.totalSets)}/${ex.totalSets}`}</span>
                 </div>
                 <div class="exercise-footer">
                     <span class="exercise-meta">${ex.weights ? 'Peso (kg):' : (ex.isBike ? 'Cardio 5 min' : 'Libre')}</span>
@@ -630,31 +459,6 @@
         startTimer(60, "⏱️ Descanso", () => {
             speakText(`Descanso terminado. ${nextMsg}`);
         });
-    }
-
-    function loadNutritionData() {
-        document.getElementById('consumed-calories').textContent = localStorage.getItem('fitia_calories') || '450';
-        document.getElementById('macro-prot').textContent = localStorage.getItem('fitia_prot') || '45g';
-        document.getElementById('macro-carb').textContent = localStorage.getItem('fitia_carb') || '60g';
-        document.getElementById('macro-fat').textContent = localStorage.getItem('fitia_fat') || '15g';
-        document.getElementById('water-count').textContent = (localStorage.getItem('fitia_water') || '1.2') + ' L';
-    }
-
-    function addMeal() {
-        let cals = parseInt(localStorage.getItem('fitia_calories') || '450') + 350;
-        localStorage.setItem('fitia_calories', cals);
-        localStorage.setItem('fitia_prot', '75g');
-        localStorage.setItem('fitia_carb', '90g');
-        localStorage.setItem('fitia_fat', '25g');
-        loadNutritionData();
-        speakText("Comida registrada correctamente.");
-    }
-
-    function addWater() {
-        let water = parseFloat(localStorage.getItem('fitia_water') || '1.2');
-        water = Math.min(3.0, parseFloat((water + 0.25).toFixed(2)));
-        localStorage.setItem('fitia_water', water);
-        loadNutritionData();
     }
 
     renderExercises();

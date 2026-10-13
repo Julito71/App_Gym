@@ -3,392 +3,430 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Fitia & Gym Pro con GIFs</title>
+    <title>Gym & Fitness - Apple Style</title>
     <style>
         :root {
-            --bg-color: #000000;
-            --card-bg: #1c1c1e;
-            --card-active: #2c2c2e;
-            --accent-color: #0a84ff;
-            --text-color: #ffffff;
-            --text-secondary: #8e8e93;
-            --success-color: #30d158;
-            --warning-color: #ffd60a;
-            --danger-color: #ff453a;
+            --ios-bg: #000000;
+            --ios-card: #1c1c1e;
+            --ios-card-elevated: #2c2c2e;
+            --ios-blue: #0a84ff;
+            --ios-green: #30d158;
+            --ios-orange: #ff9f0a;
+            --ios-red: #ff453a;
+            --ios-text: #ffffff;
+            --ios-subtext: #8e8e93;
+            --ios-border: rgba(255, 255, 255, 0.08);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: var(--ios-bg);
+            color: var(--ios-text);
             margin: 0;
-            padding: 16px;
+            padding: 20px 16px 100px 16px;
             -webkit-font-smoothing: antialiased;
         }
 
-        .container {
-            max-width: 500px;
+        .app-container {
+            max-width: 480px;
             margin: 0 auto;
-            padding-bottom: 120px;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 16px;
-        }
-
-        h1 {
-            font-size: 24px;
-            font-weight: 700;
-            margin: 0 0 4px 0;
-        }
-
-        /* Pestañas de Navegación */
-        .nav-tabs {
+        /* Apple Header */
+        .app-header {
             display: flex;
-            background: var(--card-bg);
-            border-radius: 14px;
-            padding: 4px;
-            margin-bottom: 20px;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 24px;
+            padding-top: 10px;
         }
 
-        .nav-tab {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .nav-tab.active {
-            background: var(--accent-color);
-            color: #fff;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Tarjetas estilo Fitia */
-        .fitia-card {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.6);
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .macros-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 15px;
-            text-align: center;
-        }
-
-        .macro-box {
-            background: rgba(255,255,255,0.03);
-            padding: 10px;
-            border-radius: 12px;
-        }
-
-        .macro-val {
-            font-size: 16px;
+        .app-title-group h1 {
+            font-size: 32px;
             font-weight: 700;
-            color: var(--text-color);
+            margin: 0;
+            letter-spacing: -0.5px;
         }
 
-        .macro-label {
-            font-size: 12px;
-            color: var(--text-secondary);
+        .app-title-group p {
+            font-size: 15px;
+            color: var(--ios-subtext);
+            margin: 4px 0 0 0;
         }
 
-        /* Acciones Principales */
-        .action-bar {
+        /* Top Action Bar (Spotify & Reset) */
+        .top-actions {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
         }
 
-        .btn-spotify {
+        .btn-ios-spotify {
             background-color: #1db954;
-            color: #000;
+            color: #000000;
             border: none;
-            padding: 12px 16px;
-            border-radius: 16px;
+            padding: 10px 16px;
+            border-radius: 12px;
             font-weight: 600;
             font-size: 14px;
-            cursor: pointer;
-            flex: 2;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
             text-decoration: none;
+            flex: 2;
+            box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
         }
 
-        .btn-reset {
-            background-color: #2c2c2e;
-            color: var(--danger-color);
-            border: 1px solid rgba(255, 69, 58, 0.3);
-            padding: 12px 16px;
-            border-radius: 16px;
+        .btn-ios-secondary {
+            background-color: var(--ios-card);
+            color: var(--ios-red);
+            border: 1px solid rgba(255, 69, 58, 0.2);
+            padding: 10px 16px;
+            border-radius: 12px;
             font-weight: 600;
             font-size: 14px;
             cursor: pointer;
             flex: 1;
         }
 
-        /* Tarjetas de Ejercicios con GIFs */
+        /* Tarjetas de Ejercicio Estilo Apple Watch / Fitness */
         .exercise-card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: all 0.2s ease;
+            background-color: var(--ios-card);
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 14px;
+            border: 1px solid var(--ios-border);
+            transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         .exercise-card.active {
-            border: 2px solid var(--accent-color);
-            background: var(--card-active);
-        }
-
-        .exercise-flex {
-            display: flex;
-            gap: 14px;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .exercise-gif {
-            width: 70px;
-            height: 70px;
-            border-radius: 12px;
-            object-fit: cover;
-            background: #2c2c2e;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .exercise-info-group {
-            flex: 1;
+            background-color: var(--ios-card-elevated);
+            border: 2px solid var(--ios-blue);
+            box-shadow: 0 8px 24px rgba(10, 132, 255, 0.25);
         }
 
         .exercise-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 4px;
+            margin-bottom: 14px;
         }
 
-        .exercise-title {
-            font-size: 15px;
+        .exercise-name {
+            font-size: 17px;
             font-weight: 600;
-            color: var(--text-color);
+            color: var(--ios-text);
+            letter-spacing: -0.3px;
         }
 
-        .set-badge {
+        .exercise-badge {
             background: rgba(10, 132, 255, 0.15);
-            color: var(--accent-color);
-            padding: 3px 8px;
-            border-radius: 10px;
-            font-size: 11px;
+            color: var(--ios-blue);
+            font-size: 12px;
             font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
         }
 
-        .set-row {
+        .exercise-badge.completed {
+            background: rgba(48, 209, 88, 0.15);
+            color: var(--ios-green);
+        }
+
+        .exercise-footer {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-top: 8px;
-            gap: 10px;
-            background: rgba(255,255,255,0.03);
-            padding: 10px 12px;
-            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 10px 14px;
+            border-radius: 12px;
         }
 
-        .set-info {
+        .exercise-meta {
             font-size: 14px;
-            color: var(--text-secondary);
+            color: var(--ios-subtext);
             font-weight: 500;
         }
 
+        /* Inputs y Botones Estilo iOS */
         input[type="number"] {
-            background: #2c2c2e;
-            border: 1px solid #3a3a3c;
+            background: #3a3a3c;
+            border: none;
             border-radius: 8px;
-            color: #fff;
-            padding: 8px;
-            width: 70px;
-            text-align: center;
+            color: #ffffff;
             font-size: 16px;
+            font-weight: 600;
+            padding: 8px;
+            width: 64px;
+            text-align: center;
             outline: none;
         }
 
         .btn-action {
-            background: var(--accent-color);
-            color: #fff;
+            background-color: var(--ios-blue);
+            color: #ffffff;
             border: none;
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 10px;
             font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-action:active {
+            opacity: 0.7;
         }
 
         .btn-action.completed {
-            background: var(--success-color);
-            color: #000;
+            background-color: var(--ios-green);
+            color: #000000;
         }
 
         .btn-action.disabled {
-            background: #2c2c2e;
-            color: var(--text-secondary);
+            background-color: #3a3a3c;
+            color: var(--ios-subtext);
             cursor: not-allowed;
-            opacity: 0.6;
         }
 
-        /* Overlay de Cronómetro */
-        .timer-overlay {
+        /* Panel de Nutrición Estilo Fitia & Apple Health */
+        .health-card {
+            background-color: var(--ios-card);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid var(--ios-border);
+        }
+
+        .health-title {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .macros-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 14px;
+            text-align: center;
+        }
+
+        .macro-cell {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 12px 8px;
+            border-radius: 12px;
+        }
+
+        .macro-number {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--ios-text);
+        }
+
+        .macro-label {
+            font-size: 11px;
+            color: var(--ios-subtext);
+            margin-top: 2px;
+        }
+
+        /* Barra de Navegación Inferior Estilo iOS (Tab Bar) */
+        .ios-tabbar {
             position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(44, 44, 46, 0.95);
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(28, 28, 30, 0.85);
             backdrop-filter: blur(20px);
-            border-radius: 30px;
-            padding: 14px 28px;
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--ios-border);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 24px 0;
+            z-index: 1000;
+        }
+
+        .tab-item {
+            background: none;
+            border: none;
+            color: var(--ios-subtext);
+            font-size: 11px;
+            font-weight: 500;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            width: 50%;
+        }
+
+        .tab-item.active {
+            color: var(--ios-blue);
+        }
+
+        .tab-icon {
+            font-size: 22px;
+        }
+
+        /* Contenedor de Pestañas */
+        .tab-pane {
             display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* Overlay Flotante de Descanso (Dynamic Island Style) */
+        .timer-island {
+            position: fixed;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: rgba(28, 28, 30, 0.92);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 30px;
+            padding: 10px 22px;
+            display: flex;
             align-items: center;
             gap: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            border: 1px solid rgba(255,255,255,0.1);
-            z-index: 999;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.8);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 2000;
         }
 
-        .timer-text {
-            font-size: 20px;
+        .timer-island.visible {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .timer-value {
+            font-size: 17px;
             font-weight: 700;
-            color: var(--warning-color);
+            color: var(--ios-orange);
         }
 
-        .history-section {
-            margin-top: 20px;
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 16px;
+        .history-box {
+            background-color: var(--ios-card);
+            border-radius: 20px;
+            padding: 18px;
+            margin-top: 24px;
+            border: 1px solid var(--ios-border);
         }
 
-        .history-item {
+        .history-row {
             font-size: 13px;
-            color: var(--text-secondary);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding: 6px 0;
+            color: var(--ios-subtext);
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            padding: 8px 0;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1>Fitia & Gym Pro</h1>
-        <p style="color: var(--text-secondary); margin:0;">Rutinas con Demostración GIF & Nutrición</p>
+<div class="app-container">
+    <header class="app-header">
+        <div class="app-title-group">
+            <h1>Entrenamiento</h1>
+            <p id="header-subtitle">Modo Libre Activo</p>
+        </div>
     </header>
 
-    <!-- Pestañas de Navegación -->
-    <div class="nav-tabs">
-        <div class="nav-tab active" onclick="switchTab('workout')">🏋️‍♂️ Rutina & GIFs</div>
-        <div class="nav-tab" onclick="switchTab('nutrition')">🥗 Nutrición Fitia</div>
+    <!-- Barra Superior de Acciones Rápidas -->
+    <div class="top-actions">
+        <a href="spotify://" class="btn-ios-spotify">🎵 Abrir Spotify</a>
+        <button class="btn-ios-secondary" onclick="resetRoutine()">Reiniciar</button>
     </div>
 
-    <!-- PESTAÑA RUTINA -->
-    <div id="tab-workout" class="tab-content active">
-        <div class="action-bar">
-            <a href="spotify://" class="btn-spotify">🎵 Abrir Spotify</a>
-            <button class="btn-reset" onclick="resetRoutine()">🔄 Resetear</button>
-        </div>
-
+    <!-- PESTAÑA 1: RUTINA -->
+    <div id="pane-workout" class="tab-pane active">
         <div id="exercises-list"></div>
 
-        <div class="history-section">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <span style="font-weight:600; color:var(--accent-color);">📜 Historial Acumulado</span>
-                <button onclick="clearHistory()" style="background:none; border:none; color:var(--danger-color); font-size:12px; cursor:pointer;">Borrar</button>
+        <div class="history-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <span style="font-weight:600; font-size:15px; color:var(--ios-blue);">Historial de Sesión</span>
+                <button onclick="clearHistory()" style="background:none; border:none; color:var(--ios-red); font-size:12px; cursor:pointer;">Limpiar</button>
             </div>
             <div id="history-list"></div>
         </div>
     </div>
 
-    <!-- PESTAÑA NUTRICIÓN (Estilo Fitia) -->
-    <div id="tab-nutrition" class="tab-content">
-        <div class="fitia-card">
-            <h3 style="margin:0 0 10px 0; font-size: 17px;">🔥 Control de Calorías</h3>
-            <div style="display:flex; justify-content:space-between; align-items:center;">
+    <!-- PESTAÑA 2: NUTRICIÓN -->
+    <div id="pane-nutrition" class="tab-pane">
+        <div class="health-card">
+            <div class="health-title">🔥 Calorías Diarias</div>
+            <div style="display:flex; justify-content:space-between; align-items:baseline;">
                 <div>
-                    <span style="font-size: 28px; font-weight:700;" id="consumed-calories">450</span>
-                    <span style="color:var(--text-secondary);">/ 2,200 kcal</span>
+                    <span style="font-size: 32px; font-weight: 700;" id="consumed-calories">450</span>
+                    <span style="color: var(--ios-subtext);">/ 2,200 kcal</span>
                 </div>
-                <button class="btn-action" onclick="addMeal()">+ Registrar Comida</button>
+                <button class="btn-action" onclick="addMeal()">+ Registrar</button>
             </div>
-            <div class="macros-grid">
-                <div class="macro-box">
-                    <div class="macro-val" id="macro-prot">45g</div>
+            <div class="macros-row">
+                <div class="macro-cell">
+                    <div class="macro-number" id="macro-prot">45g</div>
                     <div class="macro-label">Proteínas</div>
                 </div>
-                <div class="macro-box">
-                    <div class="macro-val" id="macro-carb">60g</div>
+                <div class="macro-cell">
+                    <div class="macro-number" id="macro-carb">60g</div>
                     <div class="macro-label">Carbos</div>
                 </div>
-                <div class="macro-box">
-                    <div class="macro-val" id="macro-fat">15g</div>
+                <div class="macro-cell">
+                    <div class="macro-number" id="macro-fat">15g</div>
                     <div class="macro-label">Grasas</div>
                 </div>
             </div>
         </div>
 
-        <div class="fitia-card">
-            <h3 style="margin:0 0 10px 0; font-size: 17px;">💧 Hidratación Diaria</h3>
+        <div class="health-card">
+            <div class="health-title">💧 Control de Agua</div>
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
-                    <span style="font-size: 24px; font-weight:700;" id="water-count">1.2 L</span>
-                    <span style="color:var(--text-secondary);">/ 2.5 L</span>
+                    <span style="font-size: 28px; font-weight: 700;" id="water-count">1.2 L</span>
+                    <span style="color: var(--ios-subtext);">/ 2.5 L</span>
                 </div>
-                <button class="btn-action" onclick="addWater()">+ Vaso (250ml)</button>
+                <button class="btn-action" onclick="addWater()">+ 250 ml</button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="timer-overlay" id="timer">
-    <span id="timer-label">⏱️ Descanso:</span>
-    <span class="timer-text" id="timer-count">60s</span>
+<!-- Dynamic Island Timer (Notificación Flotante Estilo iOS) -->
+<div class="timer-island" id="timer-island">
+    <span id="timer-label">⏱️ Descanso</span>
+    <span class="timer-value" id="timer-count">60s</span>
 </div>
 
+<!-- Tab Bar Inferior Estilo iOS -->
+<nav class="ios-tabbar">
+    <button class="tab-item active" onclick="switchTab('workout')" id="tab-btn-workout">
+        <span class="tab-icon">⚡️</span>
+        <span>Entreno</span>
+    </button>
+    <button class="tab-item" onclick="switchTab('nutrition')" id="tab-btn-nutrition">
+        <span class="tab-icon">🥗</span>
+        <span>Nutrición</span>
+    </button>
+</nav>
+
 <script>
-    // Lista de ejercicios equipada con URLs oficiales de GIFs demostrativos de alta calidad
     const exercises = [
-        { id: 1, name: "5 min Calentamiento Bici", totalSets: 1, weights: false, reps: "5 min", isBike: true, gif: "https://images.unsplash.com/photo-1517649763962-0c623266cf10?w=150&auto=format&fit=crop&q=80" },
-        { id: 2, name: "Pecho Banco Inclinado", totalSets: 3, weights: true, reps: "15 reps", gif: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Incline_Bench_Press/images/0.jpg" },
-        { id: 3, name: "Bíceps", totalSets: 3, weights: true, reps: "15 reps", gif: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Alternate_Biceps_Curl/images/0.jpg" },
-        { id: 4, name: "Abdominales Laterales de Pie", totalSets: 3, weights: true, reps: "15 reps", gif: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Plank/images/0.jpg" },
-        { id: 5, name: "Hombros Adelante", totalSets: 3, weights: true, reps: "15 reps", gif: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Front_Plate_Raise/images/0.jpg" },
-        { id: 6, name: "Pecho Acostado", totalSets: 3, weights: true, reps: "15 reps", gif: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press/images/0.jpg" },
-        { id: 7, name: "Piernas (rodillo empeine)", totalSets: 3, weights: true, reps: "15 reps", gif: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Extensions/images/0.jpg" },
-        { id: 8, name: "Abdominales", totalSets: 4, weights: false, reps: "25 reps", gif: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Crunch/images/0.jpg" },
-        { id: 9, name: "Remo", totalSets: 3, weights: true, reps: "15 reps", gif: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bent_Over_Row/images/0.jpg" },
-        { id: 10, name: "Press Piernas", totalSets: 3, weights: true, reps: "15 reps", gif: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/images/0.jpg" },
-        { id: 11, name: "Tríceps Acostado", totalSets: 3, weights: true, reps: "15 reps", gif: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Skullcrusher/images/0.jpg" },
-        { id: 12, name: "Dorsales Pecho", totalSets: 3, weights: true, reps: "15 reps", gif: "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lat_Pulldown/images/0.jpg" }
+        { id: 1, name: "5 min Calentamiento Bici", totalSets: 1, weights: false, reps: "5 min", isBike: true },
+        { id: 2, name: "Pecho Banco Inclinado", totalSets: 3, weights: true, reps: "15 reps" },
+        { id: 3, name: "Bíceps", totalSets: 3, weights: true, reps: "15 reps" },
+        { id: 4, name: "Abdominales Laterales de Pie", totalSets: 3, weights: true, reps: "15 reps" },
+        { id: 5, name: "Hombros Adelante", totalSets: 3, weights: true, reps: "15 reps" },
+        { id: 6, name: "Pecho Acostado", totalSets: 3, weights: true, reps: "15 reps" },
+        { id: 7, name: "Piernas (rodillo empeine)", totalSets: 3, weights: true, reps: "15 reps" },
+        { id: 8, name: "Abdominales", totalSets: 4, weights: false, reps: "25 reps" },
+        { id: 9, name: "Remo", totalSets: 3, weights: true, reps: "15 reps" },
+        { id: 10, name: "Press Piernas", totalSets: 3, weights: true, reps: "15 reps" },
+        { id: 11, name: "Tríceps Acostado", totalSets: 3, weights: true, reps: "15 reps" },
+        { id: 12, name: "Dorsales Pecho", totalSets: 3, weights: true, reps: "15 reps" }
     ];
 
     let activeExerciseId = localStorage.getItem('active_exercise_id') ? parseInt(localStorage.getItem('active_exercise_id')) : null;
@@ -396,26 +434,27 @@
     let timerInterval = null;
 
     function switchTab(tabName) {
-        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+        
         if (tabName === 'workout') {
-            document.querySelectorAll('.nav-tab')[0].classList.add('active');
-            document.getElementById('tab-workout').classList.add('active');
+            document.getElementById('pane-workout').classList.add('active');
+            document.getElementById('tab-btn-workout').classList.add('active');
         } else {
-            document.querySelectorAll('.nav-tab')[1].classList.add('active');
-            document.getElementById('tab-nutrition').classList.add('active');
+            document.getElementById('pane-nutrition').classList.add('active');
+            document.getElementById('tab-btn-nutrition').classList.add('active');
             loadNutritionData();
         }
     }
 
     function startTimer(durationInSeconds, label, onComplete) {
         timerEndTime = Date.now() + (durationInSeconds * 1000);
-        const timerEl = document.getElementById('timer');
+        const island = document.getElementById('timer-island');
         const countEl = document.getElementById('timer-count');
         const labelEl = document.getElementById('timer-label');
         
         labelEl.textContent = label;
-        timerEl.style.display = 'flex';
+        island.classList.add('visible');
 
         if (timerInterval) clearInterval(timerInterval);
 
@@ -424,7 +463,7 @@
 
             if (remaining <= 0) {
                 clearInterval(timerInterval);
-                timerEl.style.display = 'none';
+                island.classList.remove('visible');
 
                 if (navigator.vibrate) {
                     navigator.vibrate([500, 200, 500]);
@@ -454,7 +493,7 @@
             const activeEx = exercises.find(e => e.id === activeExerciseId);
             const currentSet = parseInt(localStorage.getItem(`set_current_${activeEx.id}`) || '1');
             if (currentSet <= activeEx.totalSets) {
-                alert(`Debes completar todas las series de "${activeEx.name}" antes de iniciar otro ejercicio.`);
+                alert(`Debes completar las series de "${activeEx.name}" primero.`);
                 return;
             }
         }
@@ -468,13 +507,13 @@
 
     function startBikeTimer(exIdx) {
         selectExercise(1);
-        startTimer(300, "🚴 Calentamiento Bici:", () => {
+        startTimer(300, "🚴 Bici (5m)", () => {
             logHistory("5 min Calentamiento Bici", 1, "Sin peso");
             localStorage.setItem(`set_current_1`, 2);
             localStorage.removeItem('active_exercise_id');
             activeExerciseId = null;
             renderExercises();
-            speakText("Calentamiento de bici completado. Selecciona tu siguiente ejercicio.");
+            speakText("Calentamiento completado. Selecciona tu siguiente ejercicio.");
         });
     }
 
@@ -494,9 +533,9 @@
             
             let actionButton = '';
             if (isFinished) {
-                actionButton = `<button class="btn-action completed">✓ Hecho</button>`;
+                actionButton = `<span class="exercise-badge completed">Completado</span>`;
             } else if (ex.isBike) {
-                actionButton = `<button class="btn-action" onclick="startBikeTimer(${exIdx})">Iniciar Bici (5m)</button>`;
+                actionButton = `<button class="btn-action" onclick="startBikeTimer(${exIdx})">Iniciar 5m</button>`;
             } else if (isActive) {
                 actionButton = `<button class="btn-action" onclick="completeSet(${exIdx})">Completar Serie</button>`;
             } else {
@@ -504,19 +543,13 @@
             }
 
             card.innerHTML = `
-                <div class="exercise-flex">
-                    <img src="${ex.gif}" alt="${ex.name}" class="exercise-gif" onerror="this.src='https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=150&auto=format&fit=crop&q=80'">
-                    <div class="exercise-info-group">
-                        <div class="exercise-header">
-                            <span class="exercise-title">${exIdx + 1}. ${ex.name}</span>
-                            <span class="set-badge">${isFinished ? 'Completado' : `Serie ${Math.min(currentSet, ex.totalSets)} /${ex.totalSets}`}</span>
-                        </div>
-                        <div style="font-size: 13px; color: var(--text-secondary);">${ex.reps}</div>
-                    </div>
+                <div class="exercise-header">
+                    <span class="exercise-name">${exIdx + 1}. ${ex.name}</span>
+                    <span class="exercise-badge">${isFinished ? '✓' : `Serie ${Math.min(currentSet, ex.totalSets)}/${ex.totalSets}`}</span>
                 </div>
-                <div class="set-row">
-                    <span class="set-info">${ex.weights ? 'Peso (kg):' : (ex.isBike ? 'Temporizador 5m' : 'Sin peso')}</span>
-                    ${ex.weights ? `<input type="number" inputmode="decimal" pattern="[0-9]*" id="input_${ex.id}" value="${savedWeight}" placeholder="kg" onchange="saveWeight(${ex.id}, this.value)">` : ''}
+                <div class="exercise-footer">
+                    <span class="exercise-meta">${ex.weights ? 'Peso (kg):' : (ex.isBike ? 'Cardio 5 min' : 'Libre')}</span>
+                    ${ex.weights ? `<input type="number" inputmode="decimal" pattern="[0-9]*" value="${savedWeight}" placeholder="0" onchange="saveWeight(${ex.id}, this.value)">` : ''}
                     ${actionButton}
                 </div>
             `;
@@ -544,28 +577,28 @@
         const historyEl = document.getElementById('history-list');
         const history = JSON.parse(localStorage.getItem('routine_history_full') || '[]');
         if (history.length === 0) {
-            historyEl.innerHTML = '<div class="history-item">No hay registros guardados aún.</div>';
+            historyEl.innerHTML = '<div class="history-row">Sin registros en esta sesión.</div>';
             return;
         }
-        historyEl.innerHTML = history.slice(0, 30).map(item => `<div class="history-item"><strong>${item.time}:</strong> ${item.text}</div>`).join('');
+        historyEl.innerHTML = history.slice(0, 25).map(item => `<div class="history-row"><strong>${item.time}</strong>: ${item.text}</div>`).join('');
     }
 
     function clearHistory() {
-        if (confirm("¿Deseas borrar todo el historial acumulado?")) {
+        if (confirm("¿Borrar el historial guardado?")) {
             localStorage.removeItem('routine_history_full');
             renderHistory();
         }
     }
 
     function resetRoutine() {
-        if (confirm("¿Quieres reiniciar el progreso de las series de hoy?")) {
+        if (confirm("¿Reiniciar el progreso de la rutina de hoy?")) {
             exercises.forEach(ex => {
                 localStorage.removeItem(`set_current_${ex.id}`);
             });
             localStorage.removeItem('active_exercise_id');
             activeExerciseId = null;
             if (timerInterval) clearInterval(timerInterval);
-            document.getElementById('timer').style.display = 'none';
+            document.getElementById('timer-island').classList.remove('visible');
             renderExercises();
         }
     }
@@ -592,48 +625,35 @@
             navigator.vibrate([200, 100, 200]);
         }
 
-        let nextMsg = "";
-        if (currentSet <= ex.totalSets) {
-            nextMsg = `Siguiente: Serie ${currentSet} de ${ex.name}`;
-        } else {
-            nextMsg = `Completaste ${ex.name}. Selecciona tu siguiente ejercicio.`;
-        }
+        let nextMsg = currentSet <= ex.totalSets ? `Siguiente: Serie ${currentSet}` : `¡Ejercicio completado!`;
 
-        startTimer(60, "⏱️ Descanso:", () => {
+        startTimer(60, "⏱️ Descanso", () => {
             speakText(`Descanso terminado. ${nextMsg}`);
         });
     }
 
     function loadNutritionData() {
-        const calories = localStorage.getItem('fitia_calories') || '450';
-        const prot = localStorage.getItem('fitia_prot') || '45g';
-        const carb = localStorage.getItem('fitia_carb') || '60g';
-        const fat = localStorage.getItem('fitia_fat') || '15g';
-        const water = localStorage.getItem('fitia_water') || '1.2';
-
-        document.getElementById('consumed-calories').textContent = calories;
-        document.getElementById('macro-prot').textContent = prot;
-        document.getElementById('macro-carb').textContent = carb;
-        document.getElementById('macro-fat').textContent = fat;
-        document.getElementById('water-count').textContent = water + ' L';
+        document.getElementById('consumed-calories').textContent = localStorage.getItem('fitia_calories') || '450';
+        document.getElementById('macro-prot').textContent = localStorage.getItem('fitia_prot') || '45g';
+        document.getElementById('macro-carb').textContent = localStorage.getItem('fitia_carb') || '60g';
+        document.getElementById('macro-fat').textContent = localStorage.getItem('fitia_fat') || '15g';
+        document.getElementById('water-count').textContent = (localStorage.getItem('fitia_water') || '1.2') + ' L';
     }
 
     function addMeal() {
-        let currentCals = parseInt(localStorage.getItem('fitia_calories') || '450');
-        currentCals += 350;
-        localStorage.setItem('fitia_calories', currentCals);
+        let cals = parseInt(localStorage.getItem('fitia_calories') || '450') + 350;
+        localStorage.setItem('fitia_calories', cals);
         localStorage.setItem('fitia_prot', '75g');
         localStorage.setItem('fitia_carb', '90g');
         localStorage.setItem('fitia_fat', '25g');
         loadNutritionData();
-        speakText("Comida registrada.");
+        speakText("Comida registrada correctamente.");
     }
 
     function addWater() {
-        let currentWater = parseFloat(localStorage.getItem('fitia_water') || '1.2');
-        currentWater = parseFloat((currentWater + 0.25).toFixed(2));
-        if (currentWater > 3.0) currentWater = 3.0;
-        localStorage.setItem('fitia_water', currentWater);
+        let water = parseFloat(localStorage.getItem('fitia_water') || '1.2');
+        water = Math.min(3.0, parseFloat((water + 0.25).toFixed(2)));
+        localStorage.setItem('fitia_water', water);
         loadNutritionData();
     }
 

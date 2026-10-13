@@ -167,22 +167,6 @@
             opacity: 0.6;
         }
 
-        .bike-timer-box {
-            background: rgba(10, 132, 255, 0.1);
-            border: 1px solid var(--accent-color);
-            border-radius: 12px;
-            padding: 12px;
-            margin-top: 10px;
-            text-align: center;
-        }
-
-        .bike-timer-display {
-            font-size: 32px;
-            font-weight: 800;
-            color: var(--accent-color);
-            font-variant-numeric: tabular-nums;
-        }
-
         .timer-overlay {
             position: fixed;
             bottom: 30px;
@@ -236,7 +220,7 @@
 <div class="container">
     <header>
         <h1>Mi Rutina Personal</h1>
-        <p style="color: var(--text-secondary); margin:0;">Modo Apple Fitness con Voz</p>
+        <p style="color: var(--text-secondary); margin:0;">Modo Apple Fitness Libre</p>
     </header>
 
     <div class="action-bar">
@@ -256,7 +240,7 @@
 </div>
 
 <div class="timer-overlay" id="timer">
-    <span>⏱️ Descanso:</span>
+    <span id="timer-label">⏱️ Descanso:</span>
     <span class="timer-text" id="timer-count">60s</span>
 </div>
 
@@ -284,7 +268,7 @@
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'es-ES';
-            utterance.rate = 1.0;
+            utterance.rate = 0.95;
             window.speechSynthesis.speak(utterance);
         }
     }
@@ -294,7 +278,7 @@
             const activeEx = exercises.find(e => e.id === activeExerciseId);
             const currentSet = parseInt(localStorage.getItem(`set_current_${activeEx.id}`) || '1');
             if (currentSet <= activeEx.totalSets) {
-                alert(`Debes completar todas las series de "${activeEx.name}" antes de cambiar de ejercicio.`);
+                alert(`Debes completar todas las series de "${activeEx.name}" antes de iniciar otro ejercicio.`);
                 return;
             }
         }
@@ -302,45 +286,43 @@
         activeExerciseId = exId;
         localStorage.setItem('active_exercise_id', exId);
         const ex = exercises.find(e => e.id === exId);
-        
         speakText(`Iniciando ${ex.name}`);
         renderExercises();
-
-        if (ex.isBike) {
-            startBikeTimer();
-        }
     }
 
-    function startBikeTimer() {
-        if (bikeTimerInterval) clearInterval(bikeTimerInterval);
+    function startBikeTimer(exIdx) {
+        selectExercise(1);
+        let bikeTime = 300; // 5 minutos = 300 segundos
+        const timerEl = document.getElementById('timer');
+        const countEl = document.getElementById('timer-count');
+        const labelEl = document.getElementById('timer-label');
         
-        let timeLeft = parseInt(localStorage.getItem('bike_time_left') || '300'); // 300s = 5 min
+        labelEl.textContent = "🚴 Calentamiento Bici:";
+        timerEl.style.display = 'flex';
 
-        const updateDisplay = () => {
-            const mins = Math.floor(timeLeft / 60);
-            const secs = timeLeft % 60;
-            const displayEl = document.getElementById('bike-timer-count');
-            if (displayEl) {
-                displayEl.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-            }
-        };
-
-        updateDisplay();
+        if (bikeTimerInterval) clearInterval(bikeTimerInterval);
 
         bikeTimerInterval = setInterval(() => {
-            timeLeft--;
-            localStorage.setItem('bike_time_left', timeLeft);
-            updateDisplay();
+            bikeTime--;
+            const mins = Math.floor(bikeTime / 60);
+            const secs = bikeTime % 60;
+            countEl.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
 
-            if (timeLeft <= 0) {
+            if (bikeTime <= 0) {
                 clearInterval(bikeTimerInterval);
-                localStorage.removeItem('bike_time_left');
-                
+                timerEl.style.display = 'none';
+
                 if (navigator.vibrate) {
                     navigator.vibrate([500, 200, 500]);
                 }
-                speakText("¡Calentamiento en bici completado! Ya puedes seleccionar tu siguiente ejercicio.");
-                completeSet(0); // Completar automáticamente el ejercicio de la bici
+
+                logHistory("5 min Calentamiento Bici", 1, "Sin peso");
+                localStorage.setItem(`set_current_1`, 2);
+                localStorage.removeItem('active_exercise_id');
+                activeExerciseId = null;
+                renderExercises();
+
+                speakText("Calentamiento de bici completado. Puedes seleccionar tu siguiente ejercicio.");
             }
         }, 1000);
     }
@@ -358,31 +340,28 @@
 
             const card = document.createElement('div');
             card.className = `exercise-card ${isActive ? 'active' : ''}`;
+            
+            let actionButton = '';
+            if (isFinished) {
+                actionButton = `<button class="btn-action completed">✓ Hecho</button>`;
+            } else if (ex.isBike) {
+                actionButton = `<button class="btn-action" onclick="startBikeTimer(${exIdx})">Iniciar Bici (5m)</button>`;
+            } else if (isActive) {
+                actionButton = `<button class="btn-action" onclick="completeSet(${exIdx})">Completar Serie</button>`;
+            } else {
+                actionButton = `<button class="btn-action ${isBlocked ? 'disabled' : ''}" onclick="selectExercise(${ex.id})">Seleccionar</button>`;
+            }
+
             card.innerHTML = `
                 <div class="exercise-header">
                     <span class="exercise-title">${exIdx + 1}. ${ex.name} (${ex.reps})</span>
                     <span class="set-badge">${isFinished ? 'Completado' : `Serie ${Math.min(currentSet, ex.totalSets)} /${ex.totalSets}`}</span>
                 </div>
                 <div class="set-row">
-                    <span class="set-info">${ex.weights ? 'Peso:' : (ex.isBike ? 'Calentamiento' : 'Sin peso')}</span>
+                    <span class="set-info">${ex.weights ? 'Peso:' : (ex.isBike ? 'Temporizador 5m' : 'Sin peso')}</span>
                     ${ex.weights ? `<input type="number" inputmode="decimal" pattern="[0-9]*" id="input_${ex.id}" value="${savedWeight}" placeholder="kg" onchange="saveWeight(${ex.id}, this.value)">` : ''}
-                    ${isFinished ? 
-                        `<button class="btn-action completed">✓ Hecho</button>` :
-                        (isActive ? 
-                            (ex.isBike ? 
-                                `<button class="btn-action" onclick="completeSet(${exIdx})">Terminar Bici</button>` :
-                                `<button class="btn-action" onclick="completeSet(${exIdx})">Completar Serie</button>`
-                            ) : 
-                            `<button class="btn-action ${isBlocked ? 'disabled' : ''}" onclick="selectExercise(${ex.id})">Seleccionar</button>`
-                        )
-                    }
+                    ${actionButton}
                 </div>
-                ${(isActive && ex.isBike && !isFinished) ? `
-                    <div class="bike-timer-box">
-                        <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 4px;">Tiempo de Pedaleo Restante</div>
-                        <div class="bike-timer-display" id="bike-timer-count">05:00</div>
-                    </div>
-                ` : ''}
             `;
             container.appendChild(card);
         });
@@ -423,15 +402,14 @@
 
     function resetRoutine() {
         if (confirm("¿Quieres reiniciar el progreso de las series de hoy?")) {
-            if (bikeTimerInterval) clearInterval(bikeTimerInterval);
-            localStorage.removeItem('bike_time_left');
             exercises.forEach(ex => {
                 localStorage.removeItem(`set_current_${ex.id}`);
             });
             localStorage.removeItem('active_exercise_id');
             activeExerciseId = null;
+            if (bikeTimerInterval) clearInterval(bikeTimerInterval);
+            document.getElementById('timer').style.display = 'none';
             renderExercises();
-            speakText("Rutina reiniciada. Selecciona tu primer ejercicio.");
         }
     }
 
@@ -449,10 +427,6 @@
         if (currentSet > ex.totalSets) {
             localStorage.removeItem('active_exercise_id');
             activeExerciseId = null;
-            if (ex.isBike && bikeTimerInterval) {
-                clearInterval(bikeTimerInterval);
-                localStorage.removeItem('bike_time_left');
-            }
         }
 
         renderExercises();
@@ -461,18 +435,20 @@
             navigator.vibrate([200, 100, 200]);
         }
 
-        // Avisos de voz
-        if (currentSet <= ex.totalSets) {
-            speakText(`Serie ${currentSet - 1} completada. Iniciando descanso de un minuto.`);
-        } else {
-            speakText(`¡Excelente! Completaste todas las series de ${ex.name}. Puedes seleccionar tu siguiente ejercicio.`);
-            return; // No arranca timer si completó todo el ejercicio
-        }
-
         let timeLeft = 60;
         const timerEl = document.getElementById('timer');
         const countEl = document.getElementById('timer-count');
+        const labelEl = document.getElementById('timer-label');
+        
+        labelEl.textContent = "⏱️ Descanso:";
         timerEl.style.display = 'flex';
+
+        let nextMsg = "";
+        if (currentSet <= ex.totalSets) {
+            nextMsg = `Siguiente: Serie ${currentSet} de ${ex.name}`;
+        } else {
+            nextMsg = `Completaste ${ex.name}. Puedes seleccionar tu siguiente ejercicio.`;
+        }
 
         const interval = setInterval(() => {
             timeLeft--;
@@ -486,7 +462,7 @@
                     navigator.vibrate([500, 200, 500]);
                 }
 
-                speakText(`Descanso terminado. Siguiente: Serie ${currentSet} de ${ex.name}`);
+                speakText(`Descanso terminado. ${nextMsg}`);
             }
         }, 1000);
     }

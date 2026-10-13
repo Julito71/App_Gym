@@ -2,13 +2,15 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Gym Pro - Apple Style</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Entrenamiento</title>
     <style>
         :root {
             --ios-bg: #000000;
             --ios-card: #1c1c1e;
-            --ios-card-elevated: #2c2c2e;
+            --ios-card-active: #2c2c2e;
             --ios-blue: #0a84ff;
             --ios-green: #30d158;
             --ios-orange: #ff9f0a;
@@ -18,45 +20,49 @@
             --ios-border: rgba(255, 255, 255, 0.08);
         }
 
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
             background-color: var(--ios-bg);
             color: var(--ios-text);
             margin: 0;
-            padding: 20px 16px 60px 16px;
+            padding: calc(env(safe-area-inset-top) + 12px) 16px calc(env(safe-area-inset-bottom) + 30px) 16px;
             -webkit-font-smoothing: antialiased;
         }
 
         .app-container {
-            max-width: 480px;
+            max-width: 440px;
             margin: 0 auto;
         }
 
+        /* Header Apple Fitness */
         .app-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 20px;
-            padding-top: 10px;
+            margin-bottom: 18px;
         }
 
-        .app-title-group h1 {
-            font-size: 32px;
+        .app-header h1 {
+            font-size: 34px;
             font-weight: 700;
             margin: 0;
-            letter-spacing: -0.5px;
+            letter-spacing: -0.8px;
         }
 
-        .app-title-group p {
-            font-size: 15px;
+        .app-header p {
+            font-size: 14px;
             color: var(--ios-subtext);
-            margin: 4px 0 0 0;
+            margin: 2px 0 0 0;
+            font-weight: 500;
         }
 
+        /* Botones superiores */
         .top-actions {
             display: flex;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 22px;
         }
 
         .btn-ios-spotify {
@@ -66,61 +72,58 @@
             padding: 12px 16px;
             border-radius: 14px;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
             text-decoration: none;
             flex: 2;
-            box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
         }
 
-        .btn-ios-secondary {
-            background-color: var(--ios-card);
+        .btn-ios-reset {
+            background-color: rgba(255, 69, 58, 0.12);
             color: var(--ios-red);
-            border: 1px solid rgba(255, 69, 58, 0.2);
+            border: none;
             padding: 12px 16px;
             border-radius: 14px;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 15px;
             cursor: pointer;
             flex: 1;
         }
 
+        /* Tarjetas de Ejercicio Estilo Apple */
         .exercise-card {
             background-color: var(--ios-card);
-            border-radius: 20px;
-            padding: 18px;
-            margin-bottom: 14px;
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 12px;
             border: 1px solid var(--ios-border);
-            transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         .exercise-card.active {
-            background-color: var(--ios-card-elevated);
-            border: 2px solid var(--ios-blue);
-            box-shadow: 0 8px 24px rgba(10, 132, 255, 0.25);
+            background-color: var(--ios-card-active);
+            border: 1.5px solid var(--ios-blue);
         }
 
         .exercise-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
 
         .exercise-name {
             font-size: 17px;
             font-weight: 600;
-            color: var(--ios-text);
-            letter-spacing: -0.3px;
+            letter-spacing: -0.4px;
         }
 
         .exercise-badge {
             background: rgba(10, 132, 255, 0.15);
             color: var(--ios-blue);
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 600;
             padding: 4px 10px;
             border-radius: 20px;
@@ -131,12 +134,12 @@
             color: var(--ios-green);
         }
 
-        .exercise-footer {
+        .exercise-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: rgba(0, 0, 0, 0.25);
-            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 8px 12px;
             border-radius: 12px;
         }
 
@@ -147,14 +150,14 @@
         }
 
         input[type="number"] {
-            background: #3a3a3c;
+            background: #2c2c2e;
             border: none;
             border-radius: 8px;
             color: #ffffff;
-            font-size: 16px;
+            font-size: 17px;
             font-weight: 600;
-            padding: 8px;
-            width: 64px;
+            padding: 6px 10px;
+            width: 70px;
             text-align: center;
             outline: none;
         }
@@ -163,7 +166,7 @@
             background-color: var(--ios-blue);
             color: #ffffff;
             border: none;
-            padding: 8px 16px;
+            padding: 9px 16px;
             border-radius: 10px;
             font-size: 14px;
             font-weight: 600;
@@ -176,26 +179,29 @@
         }
 
         .btn-action.disabled {
-            background-color: #3a3a3c;
+            background-color: #2c2c2e;
             color: var(--ios-subtext);
             cursor: not-allowed;
+            opacity: 0.5;
         }
 
+        /* Island Timer (Aviso superior) */
         .timer-island {
             position: fixed;
-            top: 16px;
+            top: calc(env(safe-area-inset-top) + 8px);
             left: 50%;
             transform: translateX(-50%) translateY(-100px);
-            background: rgba(28, 28, 30, 0.92);
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 30px;
-            padding: 10px 22px;
+            background: rgba(28, 28, 30, 0.94);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 25px;
+            padding: 8px 20px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.8);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 2000;
         }
 
@@ -204,15 +210,15 @@
         }
 
         .timer-value {
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 700;
             color: var(--ios-orange);
         }
 
         .history-box {
             background-color: var(--ios-card);
-            border-radius: 20px;
-            padding: 18px;
+            border-radius: 18px;
+            padding: 16px;
             margin-top: 24px;
             border: 1px solid var(--ios-border);
         }
@@ -229,22 +235,20 @@
 
 <div class="app-container">
     <header class="app-header">
-        <div class="app-title-group">
-            <h1>Entrenamiento</h1>
-            <p>Modo Libre Activo</p>
-        </div>
+        <h1>Entrenamiento</h1>
+        <p>Rutina Gym</p>
     </header>
 
     <div class="top-actions">
         <a href="spotify://" class="btn-ios-spotify">🎵 Abrir Spotify</a>
-        <button class="btn-ios-secondary" onclick="resetRoutine()">Reiniciar</button>
+        <button class="btn-ios-reset" onclick="resetRoutine()">Reiniciar</button>
     </div>
 
     <div id="exercises-list"></div>
 
     <div class="history-box">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <span style="font-weight:600; font-size:15px; color:var(--ios-blue);">Historial de Sesión</span>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <span style="font-weight:600; font-size:15px; color:var(--ios-blue);">Historial de Hoy</span>
             <button onclick="clearHistory()" style="background:none; border:none; color:var(--ios-red); font-size:12px; cursor:pointer;">Limpiar</button>
         </div>
         <div id="history-list"></div>
@@ -336,7 +340,7 @@
 
     function startBikeTimer(exIdx) {
         selectExercise(1);
-        startTimer(300, "🚴 Bici (5m)", () => {
+        startTimer(300, "🚴 Bici 5m", () => {
             logHistory("5 min Calentamiento Bici", 1, "Sin peso");
             localStorage.setItem(`set_current_1`, 2);
             localStorage.removeItem('active_exercise_id');
@@ -362,7 +366,7 @@
             
             let actionButton = '';
             if (isFinished) {
-                actionButton = `<span class="exercise-badge completed">Completado</span>`;
+                actionButton = `<span class="exercise-badge completed">✓ Listo</span>`;
             } else if (ex.isBike) {
                 actionButton = `<button class="btn-action" onclick="startBikeTimer(${exIdx})">Iniciar 5m</button>`;
             } else if (isActive) {
@@ -376,8 +380,8 @@
                     <span class="exercise-name">${exIdx + 1}. ${ex.name}</span>
                     <span class="exercise-badge ${isFinished ? 'completed' : ''}">${isFinished ? '✓' : `Serie ${Math.min(currentSet, ex.totalSets)}/${ex.totalSets}`}</span>
                 </div>
-                <div class="exercise-footer">
-                    <span class="exercise-meta">${ex.weights ? 'Peso (kg):' : (ex.isBike ? 'Cardio 5 min' : 'Libre')}</span>
+                <div class="exercise-row">
+                    <span class="exercise-meta">${ex.weights ? 'Peso (kg):' : (ex.isBike ? 'Calentamiento' : 'Sin peso')}</span>
                     ${ex.weights ? `<input type="number" inputmode="decimal" pattern="[0-9]*" value="${savedWeight}" placeholder="0" onchange="saveWeight(${ex.id}, this.value)">` : ''}
                     ${actionButton}
                 </div>
@@ -406,21 +410,21 @@
         const historyEl = document.getElementById('history-list');
         const history = JSON.parse(localStorage.getItem('routine_history_full') || '[]');
         if (history.length === 0) {
-            historyEl.innerHTML = '<div class="history-row">Sin registros en esta sesión.</div>';
+            historyEl.innerHTML = '<div class="history-row">Sin registros hoy.</div>';
             return;
         }
-        historyEl.innerHTML = history.slice(0, 25).map(item => `<div class="history-row"><strong>${item.time}</strong>: ${item.text}</div>`).join('');
+        historyEl.innerHTML = history.slice(0, 20).map(item => `<div class="history-row"><strong>${item.time}</strong>: ${item.text}</div>`).join('');
     }
 
     function clearHistory() {
-        if (confirm("¿Borrar el historial guardado?")) {
+        if (confirm("¿Borrar el historial?")) {
             localStorage.removeItem('routine_history_full');
             renderHistory();
         }
     }
 
     function resetRoutine() {
-        if (confirm("¿Reiniciar el progreso de la rutina de hoy?")) {
+        if (confirm("¿Reiniciar la rutina de hoy?")) {
             exercises.forEach(ex => {
                 localStorage.removeItem(`set_current_${ex.id}`);
             });

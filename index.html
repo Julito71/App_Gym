@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Gym Pro">
     <title>Entrenamiento</title>
     <style>
         :root {
@@ -18,11 +19,13 @@
             --ios-text: #ffffff;
             --ios-subtext: #8e8e93;
             --ios-border: rgba(255, 255, 255, 0.08);
+            --ios-input-bg: #2c2c2e;
         }
 
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
         body {
@@ -30,7 +33,7 @@
             background-color: var(--ios-bg);
             color: var(--ios-text);
             margin: 0;
-            padding: calc(env(safe-area-inset-top) + 12px) 16px calc(env(safe-area-inset-bottom) + 30px) 16px;
+            padding: calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 30px) 16px;
             -webkit-font-smoothing: antialiased;
         }
 
@@ -39,108 +42,98 @@
             margin: 0 auto;
         }
 
-        /* Header Apple Fitness */
+        /* Cabecera Tipo Apple Health/Fitness */
         .app-header {
-            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
         }
 
-        .app-header h1 {
+        .app-title-group h1 {
             font-size: 34px;
             font-weight: 700;
             margin: 0;
             letter-spacing: -0.8px;
+            line-height: 1.1;
         }
 
-        .app-header p {
+        .app-title-group p {
             font-size: 14px;
             color: var(--ios-subtext);
-            margin: 2px 0 0 0;
+            margin: 4px 0 0 0;
             font-weight: 500;
-        }
-
-        /* Botones superiores */
-        .top-actions {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 22px;
-        }
-
-        .btn-ios-spotify {
-            background-color: #1db954;
-            color: #000000;
-            border: none;
-            padding: 12px 16px;
-            border-radius: 14px;
-            font-weight: 600;
-            font-size: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            text-decoration: none;
-            flex: 2;
         }
 
         .btn-ios-reset {
             background-color: rgba(255, 69, 58, 0.12);
             color: var(--ios-red);
             border: none;
-            padding: 12px 16px;
-            border-radius: 14px;
+            padding: 8px 16px;
+            border-radius: 20px;
             font-weight: 600;
-            font-size: 15px;
+            font-size: 13px;
             cursor: pointer;
-            flex: 1;
+            transition: active 0.2s;
         }
 
-        /* Tarjetas de Ejercicio Estilo Apple */
+        .btn-ios-reset:active {
+            opacity: 0.6;
+        }
+
+        /* Tarjeta de Ejercicio Pro */
         .exercise-card {
             background-color: var(--ios-card);
-            border-radius: 18px;
-            padding: 16px;
+            border-radius: 20px;
+            padding: 16px 18px;
             margin-bottom: 12px;
             border: 1px solid var(--ios-border);
+            transition: transform 0.2s ease, border-color 0.2s ease;
         }
 
         .exercise-card.active {
             background-color: var(--ios-card-active);
             border: 1.5px solid var(--ios-blue);
+            box-shadow: 0 4px 20px rgba(10, 132, 255, 0.15);
         }
 
         .exercise-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
 
         .exercise-name {
             font-size: 17px;
             font-weight: 600;
             letter-spacing: -0.4px;
+            color: var(--ios-text);
         }
 
         .exercise-badge {
-            background: rgba(10, 132, 255, 0.15);
+            background: rgba(10, 132, 255, 0.12);
             color: var(--ios-blue);
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             padding: 4px 10px;
-            border-radius: 20px;
+            border-radius: 12px;
+            letter-spacing: -0.2px;
         }
 
         .exercise-badge.completed {
-            background: rgba(48, 209, 88, 0.15);
+            background: rgba(48, 209, 88, 0.12);
             color: var(--ios-green);
         }
 
-        .exercise-row {
+        .exercise-control-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: rgba(255, 255, 255, 0.04);
-            padding: 8px 12px;
-            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 8px 10px 8px 14px;
+            border-radius: 14px;
+            min-height: 52px;
         }
 
         .exercise-meta {
@@ -149,59 +142,82 @@
             font-weight: 500;
         }
 
+        /* Input de Peso de Alta Visibilidad */
+        .weight-input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         input[type="number"] {
-            background: #2c2c2e;
-            border: none;
-            border-radius: 8px;
+            background: var(--ios-input-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
             color: #ffffff;
             font-size: 17px;
             font-weight: 600;
-            padding: 6px 10px;
-            width: 70px;
+            padding: 8px 12px;
+            width: 72px;
             text-align: center;
             outline: none;
+            -webkit-appearance: none;
         }
 
+        input[type="number"]:focus {
+            border-color: var(--ios-blue);
+        }
+
+        /* Botón Primario de Acción */
         .btn-action {
             background-color: var(--ios-blue);
             color: #ffffff;
             border: none;
-            padding: 9px 16px;
-            border-radius: 10px;
+            padding: 10px 18px;
+            border-radius: 12px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
+            min-height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.15s ease;
+        }
+
+        .btn-action:active {
+            opacity: 0.7;
         }
 
         .btn-action.completed {
-            background-color: var(--ios-green);
-            color: #000000;
+            background-color: rgba(48, 209, 88, 0.15);
+            color: var(--ios-green);
+            cursor: default;
         }
 
         .btn-action.disabled {
-            background-color: #2c2c2e;
+            background-color: rgba(255, 255, 255, 0.05);
             color: var(--ios-subtext);
             cursor: not-allowed;
             opacity: 0.5;
         }
 
-        /* Island Timer (Aviso superior) */
+        /* Island Timer Superior */
         .timer-island {
             position: fixed;
-            top: calc(env(safe-area-inset-top) + 8px);
+            top: calc(env(safe-area-inset-top) + 10px);
             left: 50%;
-            transform: translateX(-50%) translateY(-100px);
-            background: rgba(28, 28, 30, 0.94);
+            transform: translateX(-50%) translateY(-120px);
+            background: rgba(28, 28, 30, 0.92);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 25px;
-            padding: 8px 20px;
+            border-radius: 30px;
+            padding: 10px 24px;
             display: flex;
             align-items: center;
-            gap: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 2000;
         }
 
@@ -210,15 +226,17 @@
         }
 
         .timer-value {
-            font-size: 16px;
+            font-size: 17px;
             font-weight: 700;
             color: var(--ios-orange);
+            font-variant-numeric: tabular-nums;
         }
 
+        /* Sección de Historial */
         .history-box {
             background-color: var(--ios-card);
-            border-radius: 18px;
-            padding: 16px;
+            border-radius: 20px;
+            padding: 18px;
             margin-top: 24px;
             border: 1px solid var(--ios-border);
         }
@@ -226,8 +244,14 @@
         .history-row {
             font-size: 13px;
             color: var(--ios-subtext);
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .history-row:last-child {
+            border-bottom: none;
         }
     </style>
 </head>
@@ -235,19 +259,17 @@
 
 <div class="app-container">
     <header class="app-header">
-        <h1>Entrenamiento</h1>
-        <p>Rutina Gym</p>
-    </header>
-
-    <div class="top-actions">
-        <a href="spotify://" class="btn-ios-spotify">🎵 Abrir Spotify</a>
+        <div class="app-title-group">
+            <h1>Entrenamiento</h1>
+            <p>Rutina Gym Libre</p>
+        </div>
         <button class="btn-ios-reset" onclick="resetRoutine()">Reiniciar</button>
-    </div>
+    </header>
 
     <div id="exercises-list"></div>
 
     <div class="history-box">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
             <span style="font-weight:600; font-size:15px; color:var(--ios-blue);">Historial de Hoy</span>
             <button onclick="clearHistory()" style="background:none; border:none; color:var(--ios-red); font-size:12px; cursor:pointer;">Limpiar</button>
         </div>
@@ -366,7 +388,7 @@
             
             let actionButton = '';
             if (isFinished) {
-                actionButton = `<span class="exercise-badge completed">✓ Listo</span>`;
+                actionButton = `<button class="btn-action completed">✓ Listo</button>`;
             } else if (ex.isBike) {
                 actionButton = `<button class="btn-action" onclick="startBikeTimer(${exIdx})">Iniciar 5m</button>`;
             } else if (isActive) {
@@ -378,12 +400,14 @@
             card.innerHTML = `
                 <div class="exercise-header">
                     <span class="exercise-name">${exIdx + 1}. ${ex.name}</span>
-                    <span class="exercise-badge ${isFinished ? 'completed' : ''}">${isFinished ? '✓' : `Serie ${Math.min(currentSet, ex.totalSets)}/${ex.totalSets}`}</span>
+                    <span class="exercise-badge ${isFinished ? 'completed' : ''}">${isFinished ? 'Completado' : `Serie ${Math.min(currentSet, ex.totalSets)}/${ex.totalSets}`}</span>
                 </div>
-                <div class="exercise-row">
-                    <span class="exercise-meta">${ex.weights ? 'Peso (kg):' : (ex.isBike ? 'Calentamiento' : 'Sin peso')}</span>
-                    ${ex.weights ? `<input type="number" inputmode="decimal" pattern="[0-9]*" value="${savedWeight}" placeholder="0" onchange="saveWeight(${ex.id}, this.value)">` : ''}
-                    ${actionButton}
+                <div class="exercise-control-row">
+                    <span class="exercise-meta">${ex.weights ? 'Peso (kg)' : (ex.isBike ? 'Calentamiento' : 'Sin peso')}</span>
+                    <div class="weight-input-group">
+                        ${ex.weights ? `<input type="number" inputmode="decimal" pattern="[0-9]*" value="${savedWeight}" placeholder="0" onchange="saveWeight(${ex.id}, this.value)">` : ''}
+                        ${actionButton}
+                    </div>
                 </div>
             `;
             container.appendChild(card);
@@ -401,7 +425,7 @@
         const now = new Date();
         const timeStr = `${now.toLocaleDateString()} ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
         
-        history.unshift({ time: timeStr, text: `${exerciseName} - Serie ${setNum} (${weight ? weight + ' kg' : 'Sin peso'})` });
+        history.unshift({ time: timeStr, text: `${exerciseName} - Serie ${setNum}`, detail: weight ? `${weight} kg` : 'Sin peso' });
         localStorage.setItem('routine_history_full', JSON.stringify(history));
         renderHistory();
     }
@@ -410,10 +434,15 @@
         const historyEl = document.getElementById('history-list');
         const history = JSON.parse(localStorage.getItem('routine_history_full') || '[]');
         if (history.length === 0) {
-            historyEl.innerHTML = '<div class="history-row">Sin registros hoy.</div>';
+            historyEl.innerHTML = '<div class="history-row"><span>Sin registros hoy.</span></div>';
             return;
         }
-        historyEl.innerHTML = history.slice(0, 20).map(item => `<div class="history-row"><strong>${item.time}</strong>: ${item.text}</div>`).join('');
+        historyEl.innerHTML = history.slice(0, 20).map(item => `
+            <div class="history-row">
+                <span><strong>${item.text}</strong></span>
+                <span style="color:var(--ios-subtext);">${item.detail} (${item.time.split(' ')[1]})</span>
+            </div>
+        `).join('');
     }
 
     function clearHistory() {
